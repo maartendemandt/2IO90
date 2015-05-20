@@ -10,8 +10,8 @@ public enum LabelPosition
 {
     NONE("NIL", 0, 0),
     NORTH_EAST("NE", 1, 1),
-    NORTH_WEST("NW", 1, -1),
-    SOUTH_EAST("SE", -1, 1),
+    NORTH_WEST("NW", -1, 1),
+    SOUTH_EAST("SE", 1, -1),
     SOUTH_WEST("SW", -1, -1);
 
     private static final Map<String, LabelPosition> fromString = new HashMap<>();

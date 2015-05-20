@@ -33,7 +33,7 @@ public class ImageGenerator
             minY = Math.min(minY, aabb.getY());
             maxY = Math.max(maxY, aabb.getV());
         });
-        int width = maxX - minX;
+        int width = (maxX - minX);
         int height = maxY - minY;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
@@ -45,7 +45,9 @@ public class ImageGenerator
                   g.drawRect(aabb.getX(), aabb.getY(), aabb.getU() - aabb.getX(), aabb.getV() - aabb.getY());
                   g.setPaint(Color.RED);
                   g.setStroke(new BasicStroke(4));
-                  g.fill(new Ellipse2D.Double(point.getX() - (POINT_SIZE / 2), point.getY() - (POINT_SIZE / 2), POINT_SIZE, POINT_SIZE));
+                  g.fill(new Ellipse2D.Double(point.getX() - (POINT_SIZE / 2),
+                                              point.getY() - (POINT_SIZE / 2),
+                                              POINT_SIZE, POINT_SIZE));
               });
         File file = new File("images");
         if (!file.exists())
