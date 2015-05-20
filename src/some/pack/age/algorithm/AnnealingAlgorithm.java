@@ -47,11 +47,16 @@ public class AnnealingAlgorithm implements IAlgorithm
     Solution getRandomSolution(int width, int height, Set<Point> problem){
         Solution solution = new Solution(width, height);
 
+        int i = 0;
         for(Point point : problem) {
             Optional<Point> p = point.getRandomFreeLabel(solution);
             if (p.isPresent())
             {
                 solution.add(p.get());
+            }
+            else
+            {
+                solution.add(point.getDefault());
             }
         }
 
@@ -65,7 +70,7 @@ public class AnnealingAlgorithm implements IAlgorithm
     }
 
     double getAppropiateDecreaseRate(double temperature){
-        return temperature * 0.01; //decrease with one procent
+        return temperature * 0.001; //decrease with one procent
 
     }
 

@@ -26,7 +26,7 @@ public class AxisAlignedBB
 
     public boolean overlaps(AxisAlignedBB aabb)
     {
-        return !(aabb.x > this.u || aabb.u < this.x || aabb.y > this.v || aabb.v < this.y);
+        return !(aabb.x >= this.u || aabb.u <= this.x || aabb.y >= this.v || aabb.v <= this.y);
     }
 
     public static AxisAlignedBB createLabel(int x, int y, int w, int h)

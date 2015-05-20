@@ -60,6 +60,7 @@ public class Solution implements Iterable<Point>
     public void remove(Point p)
     {
         this.points.remove(p);
+        this.points.add(p.getDefault());
     }
 
     public boolean isPossible(Point point)
@@ -67,7 +68,7 @@ public class Solution implements Iterable<Point>
         AxisAlignedBB box = point.getAABB(this.width, this.height);
         for (Point other : this.points)
         {
-            if (other.equals(point))
+            if (other.equals(point) || !other.isValid())
             {
                 continue;
             }

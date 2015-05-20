@@ -48,6 +48,8 @@ public abstract class Point<T extends Point>
 
     public abstract AxisAlignedBB getAABB(int width, int height);
 
+    public abstract T getDefault();
+
     @Override
     public final boolean equals(Object object)
     {

@@ -90,6 +90,11 @@ public class SliderPoint extends Point<SliderPoint>
         return new AxisAlignedBB(x, this.y, u, v);
     }
 
+    public SliderPoint getDefault()
+    {
+        return new SliderPoint(this.x, this.y, Optional.empty());
+    }
+
     @Override
     public boolean isClone(SliderPoint point)
     {

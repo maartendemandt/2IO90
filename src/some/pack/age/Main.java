@@ -21,10 +21,11 @@ public class Main
 {
 
     // Set to false if you submit it to Peach!
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static void main(String[] args)
     {
+        long start = System.nanoTime();
         MapLabeler.registerPlacementAlgorithm("2pos", new AnnealingAlgorithm());
         MapLabeler.registerPlacementAlgorithm("4pos", new AnnealingAlgorithm());
         MapLabeler.registerPlacementAlgorithm("1slider", new AnnealingAlgorithm());
@@ -67,11 +68,13 @@ public class Main
         }
         Set<Point> points = new HashSet<>(labeler.getPoints());
         Solution solution = labeler.computePoints();
-        System.out.println("number of labels: " + solution.size());
+        long count = solution.getPoints().stream().filter(Point::isValid).count();
+        System.out.println("number of labels: " + count);
         Consumer<Point> consumer = points::remove;
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);
         points.forEach(System.out::println);
+        System.out.println(System.nanoTime() - start);
         if (DEBUG)
         {
             ImageGenerator.generateImage(new ArrayList<>(solution.getPoints()), labeler.getWidth(), labeler.getHeight());

@@ -129,6 +129,11 @@ public class PosPoint extends Point<PosPoint>
         return new AxisAlignedBB(x, y, u, v);
     }
 
+    public PosPoint getDefault()
+    {
+        return new PosPoint(this, LabelPosition.NONE);
+    }
+
     @Override
     public boolean isClone(PosPoint point)
     {
