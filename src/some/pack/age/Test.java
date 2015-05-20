@@ -7,9 +7,11 @@ import some.pack.age.models.SliderPoint;
 import some.pack.age.test.ImageGenerator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,7 +27,7 @@ public class Test
 
     private static BiPredicate<Point, Point> doOverlap;
 
-    private static Counter counter = new Counter();
+    private static Tracker counter = new Tracker();
 
     public static void main(String[] args)
     {
@@ -79,7 +81,7 @@ public class Test
         Predicate<Point> notEquals = other -> !other.equals(point);
 
         Consumer<Point> report = other -> System.out.printf("Label {%s} overlaps with label {%s}\r\n", other.toString(), point.toString());
-        report = report.andThen(p -> counter.increment());
+        report = report.andThen(p -> counter.add(p));
         Predicate<Point> doOverlap = other -> Test.doOverlap.test(point, other);
         points.stream()
               .filter(Point::isValid)
@@ -121,19 +123,19 @@ public class Test
         return new SliderPoint(x, y, f);
     }
 
-    private static class Counter
+    private static class Tracker
     {
-        private int c = 0;
+        private Set<Point> points = new HashSet<>();
 
-        public void increment()
+        public void add(Point point)
         {
-            this.c++;
+            this.points.add(point);
         }
 
         @Override
         public String toString()
         {
-            return String.valueOf(this.c);
+            return String.valueOf(this.points.size());
         }
     }
 }

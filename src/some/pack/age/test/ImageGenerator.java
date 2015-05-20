@@ -37,12 +37,14 @@ public class ImageGenerator
         int height = maxY - minY;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
+        g.scale(1,-1);
+        g.translate(0, -height);
         points.stream()
               .filter(Point::isValid)
               .forEach(point -> {
                   g.setPaint(Color.BLACK);
                   AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
-                  g.drawRect(aabb.getX(), aabb.getY(), aabb.getU() - aabb.getX(), aabb.getV() - aabb.getY());
+                  g.drawRect(aabb.getX(), aabb.getY(), aabb.getU() - aabb.getX(), (aabb.getV() - aabb.getY()));
                   g.setPaint(Color.RED);
                   g.setStroke(new BasicStroke(4));
                   g.fill(new Ellipse2D.Double(point.getX() - (POINT_SIZE / 2),
