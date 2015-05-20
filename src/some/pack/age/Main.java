@@ -3,8 +3,10 @@ package some.pack.age;
 import some.pack.age.algorithm.AnnealingAlgorithm;
 import some.pack.age.models.Point;
 import some.pack.age.models.Solution;
+import some.pack.age.test.ImageGenerator;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -17,6 +19,9 @@ import java.util.function.Consumer;
  */
 public class Main
 {
+
+    // Set to false if you submit it to Peach!
+    private static final boolean DEBUG = true;
 
     public static void main(String[] args)
     {
@@ -67,6 +72,10 @@ public class Main
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);
         points.forEach(System.out::println);
+        if (DEBUG)
+        {
+            ImageGenerator.generateImage(new ArrayList<>(solution.getPoints()), labeler.getWidth(), labeler.getHeight());
+        }
     }
 
     private static Entry<String, String> parseOption(String in)

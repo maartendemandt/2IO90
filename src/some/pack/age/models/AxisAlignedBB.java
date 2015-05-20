@@ -16,10 +16,10 @@ public class AxisAlignedBB
 
     public AxisAlignedBB(int x, int y, int u, int v)
     {
-        this.x = x;
-        this.y = y;
-        this.u = u;
-        this.v = v;
+        this.x = Math.min(x, u);
+        this.y = Math.min(y, v);
+        this.u = Math.max(x, u);
+        this.v = Math.max(y, v);
         assert this.x < this.u : "x must be smaller than u";
         assert this.y < this.v : "y must be smaller than v";
     }

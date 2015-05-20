@@ -5,6 +5,7 @@ import some.pack.age.models.Point;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +20,8 @@ public class ImageGenerator
     private static int maxX = Integer.MIN_VALUE;
     private static int minY = Integer.MAX_VALUE;
     private static int maxY = Integer.MIN_VALUE;
+
+    private static final int POINT_SIZE = 20;
 
     public static void generateImage(List<Point> points, int labelWidth, int labelHeight)
     {
@@ -37,13 +40,14 @@ public class ImageGenerator
         points.stream()
               .filter(Point::isValid)
               .forEach(point -> {
-                  g.setPaint(Color.RED);
-                  g.drawOval(point.getX(), point.getY(), 2, 2);
                   g.setPaint(Color.BLACK);
                   AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
                   g.drawRect(aabb.getX(), aabb.getY(), aabb.getU() - aabb.getX(), aabb.getV() - aabb.getY());
+                  g.setPaint(Color.RED);
+                  g.setStroke(new BasicStroke(4));
+                  g.fill(new Ellipse2D.Double(point.getX() - (POINT_SIZE / 2), point.getY() - (POINT_SIZE / 2), POINT_SIZE, POINT_SIZE));
               });
-        File file = new File("D:\\2IO90\\");
+        File file = new File("images");
         if (!file.exists())
         {
             file.mkdirs();

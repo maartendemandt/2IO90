@@ -163,6 +163,16 @@ public class MapLabeler
         return this.points;
     }
 
+    public int getWidth()
+    {
+        return this.width;
+    }
+
+    public int getHeight()
+    {
+        return this.height;
+    }
+
     public static Builder builder()
     {
         return new Builder();

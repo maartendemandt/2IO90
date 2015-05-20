@@ -90,4 +90,9 @@ public class Solution implements Iterable<Point>
     {
         return this.points.size();
     }
+
+    public Set<Point> getPoints()
+    {
+        return this.points;
+    }
 }

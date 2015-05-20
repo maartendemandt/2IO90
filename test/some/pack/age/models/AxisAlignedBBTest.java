@@ -65,6 +65,14 @@ public class AxisAlignedBBTest
         check(1, 0, 5, 4);
     }
 
+    @Test
+    public void testPartialOverlap2()
+    {
+        this.mainBox = new AxisAlignedBB(0, 0, 2, 2);
+        check(1, 1, 3, 3);
+        System.out.println("Overlap 2");
+    }
+
     private void check(int x, int y, int u, int v)
     {
         AxisAlignedBB aabb = new AxisAlignedBB(x, y, u, v);
