@@ -1,6 +1,7 @@
 package some.pack.age.algorithm;
 
 import some.pack.age.models.Point;
+import some.pack.age.models.Solution;
 
 import java.util.Set;
 
@@ -9,5 +10,5 @@ import java.util.Set;
  */
 public interface IAlgorithm
 {
-    public Set<Point> computePoints(Set<Point> points, int width, int height);
+    public Solution computePoints(Set<Point> points, int width, int height);
 }

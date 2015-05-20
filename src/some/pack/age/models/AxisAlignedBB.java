@@ -24,10 +24,39 @@ public class AxisAlignedBB
         assert this.y < this.v : "y must be smaller than v";
     }
 
-    public boolean contains(Point point)
+    public boolean overlaps(AxisAlignedBB aabb)
     {
-        int a = point.getX();
-        int b = point.getY();
-        return (this.x > a && a > this.u) && (this.y > b && b > this.v);
+        return !(aabb.x > this.u || aabb.u < this.x || aabb.y > this.v || aabb.v < this.y);
+    }
+
+    public static AxisAlignedBB createLabel(int x, int y, int w, int h)
+    {
+        return new AxisAlignedBB(x, y, x + w, y + h);
+    }
+
+    public int getX()
+    {
+        return this.x;
+    }
+
+    public int getY()
+    {
+        return this.y;
+    }
+
+    public int getU()
+    {
+        return this.u;
+    }
+
+    public int getV()
+    {
+        return this.v;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("{[%d, %d], [%d, %d]}", this.x, this.y, this.u, this.v);
     }
 }

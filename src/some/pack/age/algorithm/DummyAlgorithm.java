@@ -1,6 +1,7 @@
 package some.pack.age.algorithm;
 
 import some.pack.age.models.Point;
+import some.pack.age.models.Solution;
 
 import java.util.Set;
 
@@ -11,8 +12,9 @@ public class DummyAlgorithm implements IAlgorithm
 {
 
     @Override
-    public Set<Point> computePoints(Set<Point> points, int width, int height)
+    public Solution computePoints(Set<Point> points, int width, int height)
     {
-        return points;
+        return new Solution(width, height);
     }
+
 }

@@ -2,7 +2,11 @@ package some.pack.age;
 
 import some.pack.age.algorithm.IAlgorithm;
 import some.pack.age.models.Point;
+import some.pack.age.models.PosPoint;
+import some.pack.age.models.SliderPoint;
+import some.pack.age.models.Solution;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,8 +18,42 @@ import java.util.Set;
  */
 public class MapLabeler
 {
+
+    public enum PlacementModel
+    {
+        TWO_POS("2pos"),
+        FOUR_POS("4pos"),
+        SLIDER("1slider");
+
+        private final String name;
+
+        private static final Map<String, PlacementModel> models;
+
+        private PlacementModel(String name)
+        {
+            this.name = name;
+        }
+
+        public static PlacementModel fromName(String name)
+        {
+            return PlacementModel.models.get(name);
+        }
+
+        static
+        {
+            Map<String, PlacementModel> builder = new HashMap<>();
+            for (PlacementModel model : values())
+            {
+                builder.put(model.name, model);
+            }
+            models = Collections.unmodifiableMap(builder);
+        }
+    }
+
     static class Builder
     {
+        private PlacementModel model;
+
         private int width;
 
         private int height;
@@ -28,7 +66,12 @@ public class MapLabeler
             switch (option.getKey())
             {
                 case "placement model":
-                    IAlgorithm algorithm = PLACEMENT.get(option.getValue());
+                    this.model = PlacementModel.fromName(option.getValue());
+                    if (model == null)
+                    {
+                        return Optional.of("Placement model "+option.getValue()+" not supported");
+                    }
+                    IAlgorithm algorithm = PLACEMENT_ALGORITHM.get(option.getValue());
                     if (algorithm == null)
                     {
                         return Optional.of("Placement model "+option.getValue()+" not supported");
@@ -72,12 +115,12 @@ public class MapLabeler
             assert this.algorithm != null : "No placement model has been defined";
             assert this.width > 0 : "No width has been defined";
             assert this.height > 0 : "No height has been defined";
-            return new MapLabeler(this.algorithm, this.width, this.height);
+            return new MapLabeler(this.model, this.algorithm, this.width, this.height);
         }
     }
 
 
-    private static final Map<String, IAlgorithm> PLACEMENT = new HashMap<String, IAlgorithm>()
+    private static final Map<String, IAlgorithm> PLACEMENT_ALGORITHM = new HashMap<String, IAlgorithm>()
     {
         @Override
         public IAlgorithm put(String key, IAlgorithm algorithm)
@@ -92,6 +135,8 @@ public class MapLabeler
         }
     };
 
+    private final PlacementModel model;
+
     private final int width;
 
     private final int height;
@@ -100,16 +145,22 @@ public class MapLabeler
 
     private Set<Point> points = new HashSet<>();
 
-    private MapLabeler(IAlgorithm algorithm, int width, int height)
+    private MapLabeler(PlacementModel model, IAlgorithm algorithm, int width, int height)
     {
+        this.model = model;
         this.algorithm = algorithm;
         this.width = width;
         this.height = height;
     }
 
-    public Set<Point> computePoints()
+    public Solution computePoints()
     {
-        return this.algorithm.computePoints(this.points, this.width, this.height);
+        return this.algorithm.computePoints(new HashSet<>(this.points), this.width, this.height);
+    }
+
+    public Set<Point> getPoints()
+    {
+        return this.points;
     }
 
     public static Builder builder()
@@ -117,13 +168,26 @@ public class MapLabeler
         return new Builder();
     }
 
-    public static void registerPlacementModel(String name, IAlgorithm algorithm)
+    public static void registerPlacementAlgorithm(String name, IAlgorithm algorithm)
     {
-        MapLabeler.PLACEMENT.put(name, algorithm);
+        MapLabeler.PLACEMENT_ALGORITHM.put(name, algorithm);
     }
 
-    public void addPoint(Point point)
+    public void addPoint(int x, int y)
     {
+        Point point = null;
+        switch (this.model)
+        {
+            case TWO_POS:
+                point = PosPoint.create2posPoint(x, y);
+                break;
+            case FOUR_POS:
+                point = PosPoint.create4posPoint(x, y);
+                break;
+            case SLIDER:
+                point = new SliderPoint(x, y);
+                break;
+        }
         this.points.add(point);
     }
 }

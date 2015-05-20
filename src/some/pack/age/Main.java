@@ -1,14 +1,16 @@
 package some.pack.age;
 
-import some.pack.age.algorithm.DummyAlgorithm;
-import some.pack.age.io.PointParser;
+import some.pack.age.algorithm.AnnealingAlgorithm;
 import some.pack.age.models.Point;
+import some.pack.age.models.Solution;
 
 import java.util.AbstractMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @author DarkSeraphim.
@@ -18,7 +20,9 @@ public class Main
 
     public static void main(String[] args)
     {
-        MapLabeler.registerPlacementModel("dummy", new DummyAlgorithm());
+        MapLabeler.registerPlacementAlgorithm("2pos", new AnnealingAlgorithm());
+        MapLabeler.registerPlacementAlgorithm("4pos", new AnnealingAlgorithm());
+        MapLabeler.registerPlacementAlgorithm("1slider", new AnnealingAlgorithm());
         Scanner input = new Scanner(System.in);
         MapLabeler.Builder builder = MapLabeler.builder();
         String[] echo = new String[4];
@@ -30,7 +34,6 @@ public class Main
             {
                 throw new IllegalArgumentException(optional.get());
             }
-
         }
         MapLabeler labeler = builder.build();
         echo[3] = input.nextLine();
@@ -51,14 +54,18 @@ public class Main
 
         while (n-- > 0)
         {
-            labeler.addPoint(PointParser.getPoint(input));
+            labeler.addPoint(input.nextInt(), input.nextInt());
         }
         for (String line : echo)
         {
             System.out.println(line);
         }
-        Set<Point> points = labeler.computePoints();
-        System.out.println("number of labels: " + points.size());
+        Set<Point> points = new HashSet<>(labeler.getPoints());
+        Solution solution = labeler.computePoints();
+        System.out.println("number of labels: " + solution.size());
+        Consumer<Point> consumer = points::remove;
+        consumer = consumer.andThen(System.out::println);
+        solution.forEach(consumer);
         points.forEach(System.out::println);
     }
 
