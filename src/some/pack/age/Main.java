@@ -26,11 +26,7 @@ public class Main
 {
 
     // Set to false if you submit it to Peach!
-<<<<<<< HEAD
-    private static final boolean DEBUG = true;
-=======
     private static boolean IMAGE = false;
->>>>>>> origin/master
 
     private static File FILE = null;
 
@@ -85,10 +81,6 @@ public class Main
         System.out.print("Average possibility check: ");
         solution.printAverage();
         System.out.println("number of labels: " + solution.size());
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
         Consumer<Point> consumer = points::remove;
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);
