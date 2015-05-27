@@ -213,7 +213,8 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
 
                 // Put all points in the neighborhood of point in arrayOfChanges
                 for (Point nearbyPoint : solution.getNeighbours(pointConflictedLabel)) {
-                    this.changes.add(nearbyPoint);                }
+                    this.changes.add(nearbyPoint);
+                }
             }
         }
 
