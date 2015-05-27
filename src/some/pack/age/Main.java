@@ -5,6 +5,11 @@ import some.pack.age.models.Point;
 import some.pack.age.models.Solution;
 import some.pack.age.test.ImageGenerator;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,15 +26,20 @@ public class Main
 {
 
     // Set to false if you submit it to Peach!
-    private static final boolean DEBUG = false;
+    private static boolean IMAGE = false;
 
-    public static void main(String[] args)
+    private static File FILE = null;
+
+    private static FileOutputStream fos = null;
+
+    public static void main(String[] args) throws IOException
     {
+        parseArguments(args);
         long start = System.nanoTime();
         MapLabeler.registerPlacementAlgorithm("2pos", new AnnealingAlgorithm());
         MapLabeler.registerPlacementAlgorithm("4pos", new AnnealingAlgorithm());
         MapLabeler.registerPlacementAlgorithm("1slider", new AnnealingAlgorithm());
-        Scanner input = new Scanner(System.in);
+        Scanner input = new Scanner(FILE != null ? new FileInputStream(FILE) : System.in);
         MapLabeler.Builder builder = MapLabeler.builder();
         String[] echo = new String[4];
         for (int i = 0; i < 3; i++)
@@ -71,18 +81,74 @@ public class Main
         System.out.print("Average possibility check: ");
         solution.printAverage();
         System.out.println("number of labels: " + solution.size());
-        if (true)
-        {
-            return;
-        }
         Consumer<Point> consumer = points::remove;
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);
         points.forEach(System.out::println);
-        System.out.println(System.nanoTime() - start);
-        if (DEBUG)
+        System.out.println("The process took " + (System.nanoTime() - start) + "ns.");
+        if (IMAGE)
         {
             ImageGenerator.generateImage(new ArrayList<>(solution.getPoints()), labeler.getWidth(), labeler.getHeight());
+        }
+        if (fos != null)
+        {
+            fos.flush();
+        }
+    }
+
+    private static void parseArguments(String[] args)
+    {
+        for (String arg : args)
+        {
+            String[] kv = arg.split("=", 2);
+            arg = kv[0];
+            switch (arg)
+            {
+                case "--image":
+                    IMAGE = true;
+                    break;
+                case "--file":
+                    FILE = new File(kv[1]);
+                    if (!FILE.exists())
+                    {
+                        System.out.println("File does not exist: " + FILE.getAbsolutePath());
+                        FILE = null;
+                    }
+                    else
+                    {
+                        System.out.println("Using input from " + FILE.getAbsolutePath());
+                    }
+                    break;
+                case "--out":
+                    String name = kv.length == 2 ? kv[1] : "";
+                    if (FILE != null)
+                    {
+                        System.out.println("Using same name as file: " + FILE.getName());
+                        name = FILE.getName();
+                    }
+                    if (name.isEmpty())
+                    {
+                        System.out.println("No output name given, no file specified, falling back to CLI output.");
+                        break;
+                    }
+                    File file = new File("output" + File.separator + name);
+                    try
+                    {
+                        file.getParentFile().mkdirs();
+                        if (file.exists())
+                        {
+                            file.delete();
+                        }
+                        file.createNewFile();
+                        fos = new FileOutputStream(file);
+                    }
+                    catch (IOException ex)
+                    {
+                        ex.printStackTrace();
+                        break;
+                    }
+                    System.setOut(new PrintStream(fos));
+            }
         }
     }
 
