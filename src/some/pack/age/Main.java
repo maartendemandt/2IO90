@@ -21,7 +21,7 @@ public class Main
 {
 
     // Set to false if you submit it to Peach!
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static void main(String[] args)
     {
@@ -71,10 +71,7 @@ public class Main
         System.out.print("Average possibility check: ");
         solution.printAverage();
         System.out.println("number of labels: " + solution.size());
-        if (true)
-        {
-            return;
-        }
+
         Consumer<Point> consumer = points::remove;
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);

@@ -1,21 +1,26 @@
 package some.pack.age.algorithm;
 
+import java.util.ArrayList;
 import some.pack.age.models.Point;
 import some.pack.age.models.Solution;
 import some.pack.age.test.Scheduler;
 
 import java.util.Optional;
 import java.util.Set;
+import some.pack.age.models.solutionChange;
 
 /**
  * @author DarkSeraphim.
  */
 public class AnnealingAlgorithm implements IAlgorithm
 {
-
     @Override
     public Solution computePoints(Set<Point> points, int width, int height)
     {
+        // NEIGHBOUR SOLUTION IMPROVEMENT
+        double solutionQuality;
+        // END NEIGHBOUR SOLUTION IMPROVEMENT
+        
         Solution solution = getRandomSolution(width, height, points);
         double temperature = getAppropiateTemperature(points);
         double decreaseRate = getAppropiateDecreaseRate(temperature);
@@ -24,24 +29,29 @@ public class AnnealingAlgorithm implements IAlgorithm
         double minTemperature = getAppropiateMinTempreature(temperature, decreaseRate);
         Solution bestSolution = solution;
         double maxQuality = solution.getQuality();
+        solutionQuality = maxQuality; // NEIGHBOUR SOLUTION IMPROVEMENT
         System.out.println("Quality at start: " + maxQuality);
         Scheduler s = new Scheduler();
         s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
         while (annualSchedule(temperature, decreaseRate, minTemperature)){
-            Solution neighborSolution = getNeighborSolutions(solution);
-            maxQuality = Math.max(neighborSolution.getQuality(), maxQuality);
-            double probability = getProbability(neighborSolution.getQuality(), solution.getQuality(), temperature);
+            solutionChange toChange = getNeighborSolutions(solution);
+            solution = toChange.execute(solution);
+            
+            maxQuality = Math.max(solution.getQuality(), maxQuality);
+            double probability = getProbability(solution.getQuality(), solutionQuality, temperature);
 
-            if (Math.round(neighborSolution.getQuality()) != Math.round(maxQuality))
+            if (Math.round(solution.getQuality()) != Math.round(maxQuality))
             {
-                System.out.println("Quality: " + neighborSolution.getQuality());
+                System.out.println("Quality: " + solution.getQuality());
             }
 
             if( checkIfAccepted(probability) ){
-                solution = neighborSolution;
+                solutionQuality = solution.getQuality(); // NEIGHBOUR SOLUTION IMPROVEMENT
+            } else {
+                solution = toChange.revert(solution);
             }
 
-            if(solution.getQuality() > bestSolution.getQuality()){
+            if(solutionQuality > bestSolution.getQuality()){ // NEIGHBOUR SOLUTION IMPROVEMENT
                 bestSolution = solution;
             }
 
@@ -84,7 +94,7 @@ public class AnnealingAlgorithm implements IAlgorithm
     }
 
     double getAppropiateDecreaseRate(double temperature){
-        return 1;//temperature * 0.1; //decrease with one procent
+        return temperature * 0.0001;//temperature * 0.1; //decrease with one procent
 
     }
 
@@ -99,24 +109,19 @@ public class AnnealingAlgorithm implements IAlgorithm
     }
 
 
-    Solution getNeighborSolutions(Solution solution){
-        Solution neighborSolution = new Solution(solution);
-
+    solutionChange getNeighborSolutions(Solution solution){
         //get a random point that has an option to change the label position
         Point p = solution.getRandomPoint();
-
         //change the current label with a random other label that has no conflicts
         Optional<Point> point = p.getMutation(solution);
         if (point.isPresent())
         {
-            neighborSolution.change(p, point.get());
+            return new solutionChange(p, point.get());
         }
         else
         {
-            neighborSolution.remove(p);
+            return new solutionChange(p);
         }
-
-        return neighborSolution;
     }
 
     boolean checkIfAccepted(double probability){

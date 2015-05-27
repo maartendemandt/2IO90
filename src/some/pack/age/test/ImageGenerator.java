@@ -26,7 +26,7 @@ public class ImageGenerator
     public static void generateImage(List<Point> points, int labelWidth, int labelHeight)
     {
 
-        points.forEach(point -> {
+        points.stream().filter(Point::isValid).forEach(point -> {
             AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
             minX = Math.min(minX, aabb.getX());
             maxX = Math.max(maxX, aabb.getU());
