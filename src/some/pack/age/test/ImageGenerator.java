@@ -21,12 +21,16 @@ public class ImageGenerator
     private static int minY = Integer.MAX_VALUE;
     private static int maxY = Integer.MIN_VALUE;
 
-    private static final int POINT_SIZE = 20;
+    private static final int POINT_SIZE = 5;
 
     public static void generateImage(List<Point> points, int labelWidth, int labelHeight)
     {
+        generateImage(points, labelWidth, labelHeight, String.valueOf(System.currentTimeMillis()));
+    }
 
-        points.forEach(point -> {
+    public static void generateImage(List<Point> points, int labelWidth, int labelHeight, String outName)
+    {
+        points.stream().filter(Point::isValid).forEach(point -> {
             AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
             minX = Math.min(minX, aabb.getX());
             maxX = Math.max(maxX, aabb.getU());
@@ -40,12 +44,18 @@ public class ImageGenerator
         g.scale(1,-1);
         g.translate(0, -height);
         points.stream()
-              .filter(Point::isValid)
               .forEach(point -> {
-                  g.setPaint(Color.BLACK);
-                  AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
-                  g.drawRect(aabb.getX(), aabb.getY(), aabb.getU() - aabb.getX(), (aabb.getV() - aabb.getY()));
-                  g.setPaint(Color.RED);
+                  if (point.isValid())
+                  {
+                      g.setPaint(Color.BLACK);
+                      AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
+                      g.drawRect(aabb.getX(), aabb.getY(), aabb.getU() - aabb.getX(), (aabb.getV() - aabb.getY()));
+                      g.setPaint(Color.RED);
+                  }
+                  else
+                  {
+                      g.setPaint(Color.BLACK);
+                  }
                   g.setStroke(new BasicStroke(4));
                   g.fill(new Ellipse2D.Double(point.getX() - (POINT_SIZE / 2),
                                               point.getY() - (POINT_SIZE / 2),
@@ -58,7 +68,7 @@ public class ImageGenerator
         }
         try
         {
-            ImageIO.write(image, "PNG", new File(file, String.format("%d.png", System.currentTimeMillis())));
+            ImageIO.write(image, "PNG", new File(file, String.format("%s.png", outName)));
         }
         catch (IOException ex)
         {

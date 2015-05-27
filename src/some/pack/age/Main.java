@@ -26,7 +26,7 @@ public class Main
 {
 
     // Set to false if you submit it to Peach!
-    private static boolean IMAGE = false;
+    private static String IMAGE = null;
 
     private static File FILE = null;
 
@@ -86,9 +86,9 @@ public class Main
         solution.forEach(consumer);
         points.forEach(System.out::println);
         System.out.println("The process took " + (System.nanoTime() - start) + "ns.");
-        if (IMAGE)
+        if (IMAGE != null)
         {
-            ImageGenerator.generateImage(new ArrayList<>(solution.getPoints()), labeler.getWidth(), labeler.getHeight());
+            ImageGenerator.generateImage(new ArrayList<>(solution.getPoints()), labeler.getWidth(), labeler.getHeight(), IMAGE);
         }
         if (fos != null)
         {
@@ -105,7 +105,26 @@ public class Main
             switch (arg)
             {
                 case "--image":
-                    IMAGE = true;
+                    String imageName = "";
+                    if (FILE != null)
+                    {
+                        System.out.println("Using same name for output file as input file: " + FILE.getName());
+                        imageName = FILE.getName();
+                        if (imageName.indexOf('.') > -1)
+                        {
+                            imageName = imageName.substring(0, imageName.lastIndexOf('.'));
+                        }
+                    }
+                    else if (kv.length == 2)
+                    {
+                        imageName = kv[1];
+                    }
+                    else
+                    {
+                        System.out.println("Missing image file name, no image will be generated");
+                        break;
+                    }
+                    IMAGE = imageName;
                     break;
                 case "--file":
                     FILE = new File(kv[1]);
@@ -123,7 +142,7 @@ public class Main
                     String name = kv.length == 2 ? kv[1] : "";
                     if (FILE != null)
                     {
-                        System.out.println("Using same name as file: " + FILE.getName());
+                        System.out.println("Using same name for output file as input file: " + FILE.getName());
                         name = FILE.getName();
                     }
                     if (name.isEmpty())
