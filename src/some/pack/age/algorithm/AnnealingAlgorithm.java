@@ -2,6 +2,7 @@ package some.pack.age.algorithm;
 
 import some.pack.age.models.Point;
 import some.pack.age.models.Solution;
+import some.pack.age.test.Scheduler;
 
 import java.util.Optional;
 import java.util.Set;
@@ -18,11 +19,23 @@ public class AnnealingAlgorithm implements IAlgorithm
         Solution solution = getRandomSolution(width, height, points);
         double temperature = getAppropiateTemperature(points);
         double decreaseRate = getAppropiateDecreaseRate(temperature);
+        System.out.println("Temperature = " + temperature);
+        System.out.println("DecreaseRate = " + decreaseRate);
         double minTemperature = getAppropiateMinTempreature(temperature, decreaseRate);
         Solution bestSolution = solution;
+        double maxQuality = solution.getQuality();
+        System.out.println("Quality at start: " + maxQuality);
+        Scheduler s = new Scheduler();
+        s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
         while (annualSchedule(temperature, decreaseRate, minTemperature)){
             Solution neighborSolution = getNeighborSolutions(solution);
+            maxQuality = Math.max(neighborSolution.getQuality(), maxQuality);
             double probability = getProbability(neighborSolution.getQuality(), solution.getQuality(), temperature);
+
+            if (Math.round(neighborSolution.getQuality()) != Math.round(maxQuality))
+            {
+                System.out.println("Quality: " + neighborSolution.getQuality());
+            }
 
             if( checkIfAccepted(probability) ){
                 solution = neighborSolution;
@@ -33,9 +46,10 @@ public class AnnealingAlgorithm implements IAlgorithm
             }
 
             temperature = temperature - decreaseRate;
-
+            s.bumpPhase();
         }
-
+        //s.kill();
+        System.out.println("max quality: "+maxQuality);
         return bestSolution;
     }
 
@@ -70,7 +84,7 @@ public class AnnealingAlgorithm implements IAlgorithm
     }
 
     double getAppropiateDecreaseRate(double temperature){
-        return temperature * 0.001; //decrease with one procent
+        return 1;//temperature * 0.1; //decrease with one procent
 
     }
 

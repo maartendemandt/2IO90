@@ -42,8 +42,6 @@ public abstract class Point<T extends Point>
 
     public abstract Optional<Point> getMutation(Solution solution);
 
-    public abstract List<Point> getAllMutations(Solution solution);
-
     public abstract boolean isValid();
 
     public abstract AxisAlignedBB getAABB(int width, int height);
@@ -72,8 +70,5 @@ public abstract class Point<T extends Point>
         return result;
     }
 
-    public List<Point> getCandidates(Solution solution)
-    {
-        return this.getAllMutations(solution);
-    }
+    public abstract List<Point> getCandidates(Solution solution);
 }

@@ -2,8 +2,10 @@ package some.pack.age.models;
 
 import some.pack.age.LabelPosition;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author DarkSeraphim.
@@ -44,8 +46,12 @@ public class PosPoint extends Point<PosPoint>
         Optional<Point> newPoint = Optional.empty();
         if (this.four)
         {
-            for (LabelPosition pos : LabelPosition.values())
+            LabelPosition[] poss = new LabelPosition[]{LabelPosition.NORTH_EAST, LabelPosition.NORTH_WEST, LabelPosition.SOUTH_EAST, LabelPosition.SOUTH_WEST};
+            int start = ThreadLocalRandom.current().nextInt(poss.length);
+            for (int i = 0; i < 4; i++)
             {
+                int index = (start + i) % poss.length;
+                LabelPosition pos = poss[index];
                 if ((pos == exclude) || pos == LabelPosition.NONE)
                 {
                     continue;
@@ -99,13 +105,15 @@ public class PosPoint extends Point<PosPoint>
     @Override
     public Optional<Point> getMutation(Solution solution)
     {
-        return this.getRandomExcept(solution, null);
-    }
-
-    @Override
-    public List<Point> getAllMutations(Solution solution)
-    {
-        return null;
+        Optional<Point> mutation = this.getRandomExcept(solution, this.pos);
+        if (!mutation.isPresent())
+        {
+            if (this.isValid() && solution.isPossible(this))
+            {
+                mutation = Optional.of(this);
+            }
+        }
+        return mutation;
     }
 
     @Override
@@ -132,6 +140,24 @@ public class PosPoint extends Point<PosPoint>
     public PosPoint getDefault()
     {
         return new PosPoint(this, LabelPosition.NONE);
+    }
+
+    public List<Point> getCandidates(Solution solution)
+    {
+        final PosPoint self = this;
+        if (!this.four)
+        {
+            return new ArrayList<Point>(){{
+                add(self);
+                add(new PosPoint(self, self.pos.getOtherTwoPos()));
+            }};
+        }
+        return new ArrayList<Point>() {{
+            add(new PosPoint(self, LabelPosition.NORTH_EAST));
+            add(new PosPoint(self, LabelPosition.NORTH_WEST));
+            add(new PosPoint(self, LabelPosition.SOUTH_WEST));
+            add(new PosPoint(self, LabelPosition.SOUTH_EAST));
+        }};
     }
 
     @Override

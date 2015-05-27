@@ -68,8 +68,13 @@ public class Main
         }
         Set<Point> points = new HashSet<>(labeler.getPoints());
         Solution solution = labeler.computePoints();
-        long count = solution.getPoints().stream().filter(Point::isValid).count();
-        System.out.println("number of labels: " + count);
+        System.out.print("Average possibility check: ");
+        solution.printAverage();
+        System.out.println("number of labels: " + solution.size());
+        if (true)
+        {
+            return;
+        }
         Consumer<Point> consumer = points::remove;
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);

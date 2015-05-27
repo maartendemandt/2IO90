@@ -1,5 +1,6 @@
 package some.pack.age.models;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,12 +76,6 @@ public class SliderPoint extends Point<SliderPoint>
     }
 
     @Override
-    public List<Point> getAllMutations(Solution solution)
-    {
-        return null;
-    }
-
-    @Override
     public AxisAlignedBB getAABB(int width, int height)
     {
         float negSlider = 1 - this.slider.get();
@@ -99,6 +94,12 @@ public class SliderPoint extends Point<SliderPoint>
     public boolean isClone(SliderPoint point)
     {
         return this.equals(point) && this.slider.isPresent() == point.slider.isPresent() && sameSlider(this.slider.get(), point.slider.get());
+    }
+
+    @Override
+    public List<Point> getCandidates(Solution solution)
+    {
+        return Collections.emptyList();
     }
 
     private boolean sameSlider(float a, float b)
