@@ -1,0 +1,1 @@
+java -jar "./dist/2IO90.jar" --file="[relative path]" --image --out
