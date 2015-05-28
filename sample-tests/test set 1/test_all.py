@@ -7,4 +7,4 @@ print("TESTING ALL SAMPLES...")
 samples = os.listdir("./input")
 
 for s in samples:
-    subprocess.call("java -jar ../../dist/2IO90.jar --file=input/" + s + " " + " --results-are-important --force-algorithm=sa")
+    subprocess.call("java -jar ../../dist/2IO90.jar --file=input/" + s + " " + " --out --image --results-are-important --force-algorithm=sa")

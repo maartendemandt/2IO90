@@ -1,5 +1,5 @@
 samplegen.py -pm 2pos -w 300 -h 200 -n 10 -random
-samplegen.py -pm 2pos -w 3000 -h 200 -n 10 -easiest
+samplegen.py -pm 2pos -w 300 -h 200 -n 10 -easiest
 
 samplegen.py -pm 2pos -w 300 -h 200 -n 10 -hardest
 samplegen.py -pm 2pos -w 300 -h 200 -n 10 -clustered
