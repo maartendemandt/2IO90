@@ -21,7 +21,9 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
     public Solution computePoints(Set<Point> points, int width, int height)
     {
 
-        Solution solution = new BSolution(width, height, getInput(points));
+        BSolution solution = new BSolution(width, height, getInput(points));
+        // Should initialize the candidates for the point
+        solution.forEach(solution::getCandidates);
 
         // ******* //
         // Phase 1 //
@@ -56,7 +58,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
 
             // Find points with heighest amount of candidates
             for (Point<?> point : solution) {
-                List<Point> candidates = point.getCandidates(null);
+                List<Point> candidates = solution.getCandidates(point);
                 int numOfCandidates = candidates.size();
 
                 // if number of candidates is larger than the current maximum of candidates found --> empty array, add point to array and set new maximum
@@ -74,7 +76,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
             // For each point with most candidates delete candidate with maximum number of conflicts
             for (Point<?> point : pointsMostCandidates) {
                 // Get candidates of point
-                List<Point> candidates = point.getCandidates(null);
+                List<Point> candidates = solution.getCandidates(point);
                 Point candidateMostConflicts = null;
                 int maxNumberOfConflicts = 0;
 
@@ -92,7 +94,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
 
                 // Delete candidate with most conflicts if number of conflicts > 0
                 if (maxNumberOfConflicts > 0) {
-                    solution.remove(candidateMostConflicts);
+                    solution.removeCandidate(candidateMostConflicts);
 
 
                     // Put all points in the neighborhood of point in arrayOfChanges
@@ -115,30 +117,30 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         List<Point> points = new ArrayList<>();
         for (Point<?> point : input) {
             // Add per point 2 or 4 candidates (depending on the model)
-            points.addAll(point.getCandidates(null));
+            points.add(point.getDefault());
         }
         return points;
     }
 
-    Point applyRule1(Solution solution, Point<?> point) {
+    Point applyRule1(BSolution solution, Point<?> point) {
         // Iterate over all points
-        for (Point candidate : point.getCandidates(solution)) {
+        for (Point candidate : solution.getCandidates(point)) {
             // Remove all candidates of point except the candidate with no conflicts
             if (solution.isPossible(candidate))
             {
                 continue;
             }
-            point.getCandidates(solution).stream()
+            solution.getCandidates(point).stream()
                                          .filter(other -> !candidate.equals(other))
-                                         .forEach(solution::remove);
+                                         .forEach(solution::removeCandidate);
             this.changes.addAll(solution.getNeighbours(candidate));
             break;
         }
         return point;
     }
 
-    Point applyRule2(Solution solution, Point<?> point) {
-        for (Point candidate : point.getCandidates(null)) {
+    Point applyRule2(BSolution solution, Point<?> point) {
+        for (Point candidate : solution.getCandidates(point)) {
             // This will store the label which makes sure the candidate can be part of the end solution
             Point conflictSolver = null;
 
@@ -153,7 +155,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
                 pointConflictedLabel = point;
 
                 // Loop through all candidates of conflicted point
-                for (Point candidateConflictPoint : pointConflictedLabel.getCandidates(null)) {
+                for (Point candidateConflictPoint : solution.getCandidates(pointConflictedLabel)) {
                     // Check if its not the label which was in conflict with the candidate
                     if (candidateConflictPoint != conflicts.get(0)) {
                         List<Point> conflictsCandidateConflictPoint = solution.getConflicts(candidateConflictPoint);
@@ -181,16 +183,16 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
             // If there is a conflictSolver, use it!
             if (conflictSolver != null) {
                 // Remove all candidates of point except the candidate with no conflicts
-                point.getCandidates(null).stream()
+                solution.getCandidates(point).stream()
                                          .filter(candidate::isClone)
-                                         .forEach(solution::remove);
+                                         .forEach(solution::removeCandidate);
 
                 this.changes.addAll(solution.getNeighbours(point));
 
                 // Remove all candidates of the conflict point except the conflictSolver
-                for (Point label : pointConflictedLabel.getCandidates(null)) {
+                for (Point label : solution.getCandidates(pointConflictedLabel)) {
                     if (label != conflictSolver) {
-                        solution.remove(label);
+                        solution.removeCandidate(label);
                     }
                 }
 
@@ -201,9 +203,9 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         return point;
     }
 
-    Point applyRule3(Solution solution, Point<?> point, int width, int height) {
+    Point applyRule3(BSolution solution, Point<?> point, int width, int height) {
         // Get candidates of point
-        List<Point> candidates = point.getCandidates(null);
+        List<Point> candidates = solution.getCandidates(point);
 
         // Check if there is only conflict, if so, check if it can be eliminated with rule 2
         if (candidates.size() == 1) {
@@ -226,7 +228,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
             {
                 // Remove all conflicts that overlap the candidate
                 Point pointOfConflict = candidates.get(0);
-                conflicts.forEach(solution::remove);
+                conflicts.forEach(solution::removeCandidate);
                 this.changes.addAll(solution.getNeighbours(pointOfConflict));
             }
         }
@@ -234,7 +236,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         return point;
     }
 
-    void processArrayOfChanges(Solution solution, int width, int height)
+    void processArrayOfChanges(BSolution solution, int width, int height)
     {
         for(Point point : changes)
         {
@@ -251,11 +253,11 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         changes.clear();
     }
 
-    boolean checkPhase2(Solution solution)
+    boolean checkPhase2(BSolution solution)
     {
         for (Point<?> point : solution)
         {
-            List<Point> candidates = point.getCandidates(null);
+            List<Point> candidates = solution.getCandidates(point);
 
             if (candidates.size() > 1)
             {

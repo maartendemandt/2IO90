@@ -26,6 +26,7 @@ public class Main
 {
 
     // Set to false if you submit it to Peach!
+
     private static String IMAGE = null;
 
     private static File FILE = null;

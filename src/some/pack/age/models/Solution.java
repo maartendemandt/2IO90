@@ -19,7 +19,6 @@ public class Solution implements Iterable<Point>
 
     private final int height;
 
-    // TODO: Neither Set nor List are great data structures here.
     private final Set<Point> points;
 
     private final Map<Point, List<Point>> collisions = new HashMap<>();
