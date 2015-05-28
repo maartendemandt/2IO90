@@ -4,6 +4,8 @@ from math import sqrt
 from math import floor
 from itertools import product
 
+DEBUG = False
+
 # Reads arguments
 itr = iter(sys.argv)
 while 1:
@@ -20,7 +22,7 @@ while 1:
             else:
                 raise ValueError
         except:
-            sys.exit("bad value for -pm (placement model), should be either '2pos', '4pos' or '1slider'")
+            sys.exit("[ERROR] bad value for -pm (placement model), should be either 2pos, 4pos or 1slider")
 
     elif next == "-w":
         try:
@@ -30,7 +32,7 @@ while 1:
             else:
                 raise ValueError
         except:
-            sys.exit("bad value for -w (width), should be a natural number > 0")
+            sys.exit("[ERROR] bad value for -w (width of labels), should be a natural number > 0")
 
     elif next == "-h":
         try:
@@ -40,7 +42,7 @@ while 1:
             else:
                 raise ValueError
         except:
-            sys.exit("bad value for -h (height), should be a natural number > 0")
+            sys.exit("[ERROR] bad value for -h (height of labels), should be a natural number > 0")
 
     elif next == "-n":
         try:
@@ -50,7 +52,7 @@ while 1:
             else:
                 raise ValueError
         except:
-            sys.exit("bad value for -n (number of points), should be a natural number >= 5")
+            sys.exit("[ERROR] bad value for -n (number of points), should be a natural number >= 5")
 
     elif next == "-m":
         try:
@@ -60,7 +62,7 @@ while 1:
             else:
                 raise ValueError
         except:
-            sys.exit("bad value for -m (number of clusters), should be a natural number >= 1")
+            sys.exit("[ERROR] bad value for -m (number of clusters), should be a natural number >= 1")
 
     elif next == "-cd":
         try:
@@ -70,53 +72,52 @@ while 1:
             else:
                 raise ValueError
         except:
-            sys.exit("bad value for -cd (cluster density), should be 0 <= cd <= 1")
+            sys.exit("[ERROR] bad value for -cd (cluster density), should be 0 <= cd <= 1")
 
     elif next == "-random":
         distribution = "random"
 
-    elif next == "-hardest":
-        distribution = "hardest"
-
     elif next == "-easiest":
         distribution = "easiest"
 
+    elif next == "-hardest":
+        distribution = "hardest"
+
     elif next == "-clustered":
         distribution = "clustered"
-
 
 # Tests if all required arguments have been supplied
 # If optional, sets them as default
 try:
     model
 except NameError:
-    sys.exit("placement model (-pm) not defined")
+    sys.exit("[ERROR] placement model (-pm) not defined")
 try:
     width
 except NameError:
-    sys.exit("width (-w) not defined")
+    sys.exit("[ERROR] width of labels (-w) not defined")
 try:
     height
 except NameError:
-    sys.exit("height (-h) not defined")
+    sys.exit("[ERROR] height of labels (-h) not defined")
 try:
     n
 except NameError:
-    sys.exit("number of points (-n) not defined")
+    sys.exit("[ERROR] number of points (-n) not defined")
 try:
     distribution
 except NameError:
-    sys.exit("distribution not defined")
+    sys.exit("[ERROR] distribution not defined")
 if distribution == "clustered":
     try:
         m
     except NameError:
-        print("number of clusters (-m) not defined, taking sqrt(n) as default")
+        print("[INFO] number of clusters (-m) not defined, taking sqrt(n) as default")
         m = floor(sqrt(n))
     try:
         cd
     except NameError:
-        print("cluster density (-cd) not defined, taking 0.80 as default")
+        print("[INFO] cluster density (-cd) not defined, taking 0.80 as default")
         cd = 0.80
 
 # Adds input argument to output file
@@ -126,11 +127,12 @@ output.append("width: " + str(width))
 output.append("height: " + str(height))
 output.append("number of points: " + str(n))
 
-print("GENERATING...")
+print("generating...")
 
-if distribution == "random" or distribution =="clustered":
-	# Creates a 2D-array that is used to make sure there are no duplicate points
-	points = [[0 for x in range(10001)] for x in range(10001)]
+if distribution == "random" or distribution == "clustered":
+    # Creates a 2D-array that is used to make sure there are no duplicate points
+    points = [[0 for x in range(10001)] for x in range(10001)]
+
 
 def append_point(x, y):
     output.append(str(x) + (5 - len(str(x))) * " " + str(y))
@@ -174,8 +176,8 @@ elif distribution == "easiest":
                 k -= 1
             else:
                 break
-				
-# Distributes points so that there is exactly one solution where each point is labeled
+
+# Distributes points so that there is exactly one solution in which each point is labeled
 elif distribution == "hardest":
     k = n  # points yet to be placed
 
@@ -235,8 +237,9 @@ elif distribution == "clustered":
 
     clusters = []
     radius = floor(0.5 * cd * sqrt(100000000 / m))
-    print("cluster radius = " + str(radius))
-    print("cluster centers =")
+    if DEBUG:
+        print("cluster radius = " + str(radius))
+        print("cluster centers =")
 
     # Creates m clusters
     for j in range(0, m):
@@ -245,7 +248,8 @@ elif distribution == "clustered":
             cluster_y = randint(0, 10000)
             new_cluster = Cluster(j, cluster_x, cluster_y)
             if isIsolated(new_cluster, 2 * radius):
-                print("[" + str(new_cluster.j) + "]", new_cluster.x, new_cluster.y)
+                if DEBUG:
+                    print("[" + str(new_cluster.j) + "]", new_cluster.x, new_cluster.y)
                 clusters.append(new_cluster)
 
                 # Creates points in each circular cluster
@@ -267,4 +271,4 @@ output_file = open(
     "sample-" + model + "-w" + str(width) + "-h" + str(height) + "-n" + str(n) + "-" + distribution + ".txt", "w")
 output_file.write("\n".join(output))
 
-print("DONE")
+print("done")
