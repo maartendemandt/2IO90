@@ -113,7 +113,7 @@ public class Solution implements Iterable<Point>
         return this.points;
     }
 
-    public Set<Point> getNeighbours(Point point)
+    public Set<Point<?>> getNeighbours(Point point)
     {
         return null;
     }
