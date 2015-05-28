@@ -1,6 +1,8 @@
 package some.pack.age;
 
 import some.pack.age.algorithm.AnnealingAlgorithm;
+import some.pack.age.algorithm.IAlgorithm;
+import some.pack.age.algorithm.ThreePlusOneAlgorithm;
 import some.pack.age.models.Point;
 import some.pack.age.models.Solution;
 import some.pack.age.test.ImageGenerator;
@@ -32,6 +34,10 @@ public class Main
     private static File FILE = null;
 
     private static FileOutputStream fos = null;
+    
+    private static boolean RESULTS_ARE_IMPORTANT;
+
+    protected static Optional<IAlgorithm> USE_ME_SENPAI = Optional.empty();
 
     public static void main(String[] args) throws IOException
     {
@@ -94,6 +100,10 @@ public class Main
         if (fos != null)
         {
             fos.flush();
+        }
+        if (RESULTS_ARE_IMPORTANT)
+        {
+            System.out.println("number of labels: " + solution.size());
         }
     }
 
@@ -168,6 +178,40 @@ public class Main
                         break;
                     }
                     System.setOut(new PrintStream(fos));
+                    break;
+                case "--results-are-important":
+                    RESULTS_ARE_IMPORTANT = true;
+                    break;
+                case "--force-algorithm":
+                    if (kv.length != 2)
+                    {
+                        System.out.println("No forced algorithm name given :c");
+                    }
+                    switch (kv[1].toLowerCase())
+                    {
+                        case "ei":
+                        case "ei+l3":
+                        case "l3":
+                        case "et":
+                            USE_ME_SENPAI = Optional.of(new ThreePlusOneAlgorithm());
+                            break;
+                        case "annealing":
+                        case "simulatedannealing":
+                        case "sa":
+                            USE_ME_SENPAI = Optional.of(new AnnealingAlgorithm());
+                            break;
+                    }
+                    break;
+                case "--test":
+                    System.out.println(new File("bar").getAbsolutePath());
+                    throw new RuntimeException("We are in test mode!")
+                    {
+                        @Override
+                        public Throwable fillInStackTrace()
+                        {
+                            return this;
+                        }
+                    };
             }
         }
     }
@@ -179,5 +223,4 @@ public class Main
         String value = in.substring(index + 2);
         return new AbstractMap.SimpleEntry<>(key, value);
     }
-
 }

@@ -115,6 +115,7 @@ public class MapLabeler
             assert this.algorithm != null : "No placement model has been defined";
             assert this.width > 0 : "No width has been defined";
             assert this.height > 0 : "No height has been defined";
+            this.algorithm = Main.USE_ME_SENPAI.isPresent() ? Main.USE_ME_SENPAI.get() : this.algorithm;
             return new MapLabeler(this.model, this.algorithm, this.width, this.height);
         }
     }
