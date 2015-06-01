@@ -1,5 +1,10 @@
-samplegen.py -pm 2pos -w 300 -h 200 -n 10 -random
-samplegen.py -pm 2pos -w 300 -h 200 -n 10 -easiest
-
-samplegen.py -pm 2pos -w 300 -h 200 -n 10 -hardest
-samplegen.py -pm 2pos -w 300 -h 200 -n 10 -clustered
+samplegen.py -pm 2pos -w 300 -h 200 -n 100 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 200 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 300 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 400 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 500 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 600 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 700 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 800 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 900 -random
+samplegen.py -pm 2pos -w 300 -h 200 -n 1000 -random

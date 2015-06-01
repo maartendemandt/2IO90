@@ -9,6 +9,9 @@ try:
 except FileNotFoundError:
     sys.exit("[ERROR] File samples.txt not found")
 
+# Creates an input folder if it does not exist
+if not os.path.exists("./input"):
+    os.makedirs("./input")
 os.chdir("./input")
 
 for line in file:
