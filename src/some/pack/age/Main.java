@@ -92,7 +92,7 @@ public class Main
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);
         points.forEach(System.out::println);
-        System.out.println("The process took " + (System.nanoTime() - start) + "ns.");
+        System.out.println("The process took " + (System.nanoTime() - start));
         if (IMAGE != null)
         {
             ImageGenerator.generateImage(new ArrayList<>(solution.getPoints()), labeler.getWidth(), labeler.getHeight(), IMAGE);
