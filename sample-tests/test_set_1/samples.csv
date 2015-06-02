@@ -1,0 +1,5 @@
+Placement model;Width;Height;Number of points;Distribution;Algorithm;Quality;Running time(ns)
+2pos;300;200;100;random;;;
+2pos;300;200;100;random;sa;0.99;547550699
+2pos;300;200;200;random;sa;0.945;725933359
+2pos;300;200;300;clustered;sa;0.7233333333333334;902172227

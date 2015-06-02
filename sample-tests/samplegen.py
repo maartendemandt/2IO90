@@ -54,6 +54,18 @@ while 1:
         except:
             sys.exit("[ERROR] bad value for -n (number of points), should be a natural number >= 5")
 
+    elif next == "-random":
+        distribution = "random"
+
+    elif next == "-easiest":
+        distribution = "easiest"
+
+    elif next == "-hardest":
+        distribution = "hardest"
+
+    elif next == "-clustered":
+        distribution = "clustered"
+
     elif next == "-m":
         try:
             next = int(itr.__next__())
@@ -74,17 +86,11 @@ while 1:
         except:
             sys.exit("[ERROR] bad value for -cd (cluster density), should be 0 <= cd <= 1")
 
-    elif next == "-random":
-        distribution = "random"
+    elif next == "-sa":
+        algorithm = "sa"
 
-    elif next == "-easiest":
-        distribution = "easiest"
-
-    elif next == "-hardest":
-        distribution = "hardest"
-
-    elif next == "-clustered":
-        distribution = "clustered"
+    elif next == "-eil3":
+        algorithm = "eil3"
 
 # Tests if all required arguments have been supplied
 # If optional, sets them as default
@@ -119,6 +125,10 @@ if distribution == "clustered":
     except NameError:
         print("[INFO] cluster density (-cd) not defined, taking 0.80 as default")
         cd = 0.80
+try:
+    algorithm
+except NameError:
+    sys.exit("[ERROR] algorithm not defined")
 
 # Adds input argument to output file
 output = []
@@ -131,7 +141,12 @@ print("generating...")
 
 if distribution == "random" or distribution == "clustered":
     # Creates a 2D-array that is used to make sure there are no duplicate points
-    points = [[0 for x in range(10001)] for x in range(10001)]
+    class Point:
+        def __init__(self, x ,y):
+            self.x = x
+            self.y = y
+
+    points = []
 
 
 def append_point(x, y):
@@ -143,11 +158,13 @@ if distribution == "random":
         while 1:
             x = randint(0, 10000)
             y = randint(0, 10000)
-            # Makes sure the point there is no point on that exact location already
-            if points[x][y] == 0:
-                append_point(x, y)
-                points[x][y] = 1
-                break
+            # Makes sure there are no duplicate points
+            for p in points:
+                if x == p.x and y == p.y:
+                    continue
+            points.append(Point(x, y))
+            append_point(x, y)
+            break
 
 # Distributes points so that there are no conflicts possible
 elif distribution == "easiest":
@@ -260,15 +277,21 @@ elif distribution == "clustered":
                         local_y = randint(-range_y, range_y)
                         x = cluster_x + local_x
                         y = cluster_y + local_y
-                        if 0 <= x <= 10000 and 0 <= y <= 10000 and points[x][y] == 0:
-                            append_point(x, y)
-                            points[x][y] = 1
-                            break
+                        # Makes sure potential location is within bounds
+                        if not 0 <= x <= 10000 or not 0 <= y <= 10000:
+                            continue
+                        # Makes sure there are no duplicate points
+                        for p in points:
+                            if x == p.x and y == p.y:
+                                continue
+                        points.append(Point(x, y))
+                        append_point(x, y)
+                        break
                 break
 
 # Writes to file
-output_file = open(
-    "sample-" + model + "-w" + str(width) + "-h" + str(height) + "-n" + str(n) + "-" + distribution + ".txt", "w")
+file_name = "sample-" + model + "-w" + str(width) + "-h" + str(height) + "-n" + str(n) + "-" + distribution + "-" + algorithm + ".txt"
+output_file = open(file_name, "w")
 output_file.write("\n".join(output))
 
 print("done")
