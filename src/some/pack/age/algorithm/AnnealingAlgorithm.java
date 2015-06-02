@@ -21,23 +21,19 @@ public class AnnealingAlgorithm implements IAlgorithm
         double solutionQuality;
         // END NEIGHBOUR SOLUTION IMPROVEMENT
         
-        long startTime = System.currentTimeMillis(); //JG
-        double numberOfMinutes = 4.9; //JG
-        
         Solution solution = getRandomSolution(width, height, points);
         double temperature = getAppropiateTemperature(points);
-        double initialTemperature = temperature; //JG
-        //double decreaseRate = getAppropiateDecreaseRate(temperature);
+        double decreaseRate = getAppropiateDecreaseRate(temperature);
         System.out.println("Temperature = " + temperature);
-        //System.out.println("DecreaseRate = " + decreaseRate);
-        double minTemperature = getAppropiateMinTempreature();
+        System.out.println("DecreaseRate = " + decreaseRate);
+        double minTemperature = getAppropiateMinTempreature(temperature, decreaseRate);
         Solution bestSolution = solution;
         double maxQuality = solution.getQuality();
         solutionQuality = maxQuality; // NEIGHBOUR SOLUTION IMPROVEMENT
         System.out.println("Quality at start: " + maxQuality);
-        //Scheduler s = new Scheduler();
-        //s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate)); //JG
-        while (annualSchedule(temperature, minTemperature)){
+        Scheduler s = new Scheduler();
+        s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
+        while (annualSchedule(temperature, decreaseRate, minTemperature)){
             solutionChange toChange = getNeighborSolutions(solution);
             solution = toChange.execute(solution);
             
@@ -59,8 +55,8 @@ public class AnnealingAlgorithm implements IAlgorithm
                 bestSolution = solution;
             }
 
-            temperature = calculateTemperature(initialTemperature, startTime, numberOfMinutes); // CHANGED BY JG
-            //s.bumpPhase();
+            temperature = temperature - decreaseRate;
+            s.bumpPhase();
         }
         //s.kill();
         System.out.println("max quality: "+maxQuality);
@@ -93,31 +89,29 @@ public class AnnealingAlgorithm implements IAlgorithm
 
     double getAppropiateTemperature(Set<Point> problem){
         //one way is just starting with the problem size
-        //return problem.size();
-        return 4.0;
+        return problem.size();
 
     }
 
-    /*double getAppropiateDecreaseRate(double temperature){
+    double getAppropiateDecreaseRate(double temperature){
         return temperature * 0.0001;//temperature * 0.1; //decrease with one procent
 
-    }*/
+    }
 
-    double getAppropiateMinTempreature(){
-        return 0;
+    double getAppropiateMinTempreature(double temperature, double decreaseRate){
+        return 1;
     }
 
     //returns if we are done with the algorithm according to the schedule
-    boolean annualSchedule(double temperature, double minTemperature){
+    boolean annualSchedule(double temperature, double decreaseRate, double minTemperature){
+        temperature = temperature - decreaseRate;
         return temperature > minTemperature;
     }
 
 
     solutionChange getNeighborSolutions(Solution solution){
         //get a random point that has an option to change the label position
-        
-        Point p = solution.getRandomPoint(); //TODO Alleen interessant punt teruggeven!!!!
-        
+        Point p = solution.getRandomPoint();
         //change the current label with a random other label that has no conflicts
         Optional<Point> point = p.getMutation(solution);
         if (point.isPresent())
@@ -143,22 +137,14 @@ public class AnnealingAlgorithm implements IAlgorithm
     //could be the case that we have to switch the "<" sign because of the way we meassure the quality
     double getProbability(double neighborQuality, double currentQuality, double temperature){
         double chance = 0;
-        if(neighborQuality >= currentQuality){
+        if(neighborQuality > currentQuality){
             chance = 1;
         } else {
             //expression:  chance = e^((neighborQuality - currentQuality) / temperature)
-            //difference is always -1 when neibhorquality < current quality
-            chance = Math.exp( -1 / temperature);
+            chance = Math.exp((neighborQuality - currentQuality) / temperature);
         }
 
         return chance;
-    }
-    
-    double calculateTemperature(double initialTemperature, long startTime, double numberOfMinutes) {
-        long currentTime = System.currentTimeMillis();
-        long timePassed = currentTime - startTime;
-
-        return initialTemperature - (initialTemperature * (timePassed/(60000*numberOfMinutes)));
     }
 
 //nog meer general notes:

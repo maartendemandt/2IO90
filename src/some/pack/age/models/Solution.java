@@ -20,8 +20,6 @@ public class Solution implements Iterable<Point>
     private final int height;
 
     private final Set<Point> points;
-    
-    private Set<Point> interestingPoints; 
 
     private final Map<Point, List<Point>> collisions = new HashMap<>();
 
