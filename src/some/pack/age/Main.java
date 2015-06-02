@@ -85,14 +85,21 @@ public class Main
         }
         Set<Point> points = new HashSet<>(labeler.getPoints());
         Solution solution = labeler.computePoints();
-        System.out.print("Average possibility check: ");
+        System.out.print("Average possibility check (ns): ");
         solution.printAverage();
-        System.out.println("number of labels: " + solution.size());
+        System.out.println("Number of labels placed: " + solution.size());
+        System.out.println("Running time (ns): " + (System.nanoTime() - start));
+        if (USE_ME_SENPAI.isPresent()){
+            if (USE_ME_SENPAI.get() instanceof AnnealingAlgorithm){
+                System.out.println("Algorithm used: sa"); 
+            } else if (USE_ME_SENPAI.get() instanceof ThreePlusOneAlgorithm){
+                System.out.println("Algorithm used: eil3");
+            }
+        }
         Consumer<Point> consumer = points::remove;
         consumer = consumer.andThen(System.out::println);
         solution.forEach(consumer);
-        points.forEach(System.out::println);
-        System.out.println("The process took " + (System.nanoTime() - start));
+        points.forEach(System.out::println);        
         if (IMAGE != null)
         {
             ImageGenerator.generateImage(new ArrayList<>(solution.getPoints()), labeler.getWidth(), labeler.getHeight(), IMAGE);
@@ -103,7 +110,7 @@ public class Main
         }
         if (RESULTS_ARE_IMPORTANT)
         {
-            System.out.println("number of labels: " + solution.size());
+            System.out.println("Number of labels placed: " + solution.size());
         }
     }
 
