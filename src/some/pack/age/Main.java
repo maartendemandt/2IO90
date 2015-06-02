@@ -198,6 +198,7 @@ public class Main
                     {
                         case "ei":
                         case "ei+l3":
+                        case "eil3":
                         case "l3":
                         case "et":
                             USE_ME_SENPAI = Optional.of(new ThreePlusOneAlgorithm());
