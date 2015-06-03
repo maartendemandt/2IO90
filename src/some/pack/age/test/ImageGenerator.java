@@ -21,7 +21,7 @@ public class ImageGenerator
     private static int minY = Integer.MAX_VALUE;
     private static int maxY = Integer.MIN_VALUE;
 
-    private static final int POINT_SIZE = 5;
+    private static final int POINT_SIZE = 20;
 
     public static void generateImage(List<Point> points, int labelWidth, int labelHeight)
     {
@@ -30,19 +30,22 @@ public class ImageGenerator
 
     public static void generateImage(List<Point> points, int labelWidth, int labelHeight, String outName)
     {
-        points.stream().filter(Point::isValid).forEach(point -> {
+        /*points.stream().filter(Point::isValid).forEach(point -> {
             AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
             minX = Math.min(minX, aabb.getX());
             maxX = Math.max(maxX, aabb.getU());
             minY = Math.min(minY, aabb.getY());
             maxY = Math.max(maxY, aabb.getV());
-        });
-        int width = (maxX - minX);
-        int height = maxY - minY;
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        });*/
+        int width = 10000;
+        int height = 10000;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
         Graphics2D g = image.createGraphics();
         g.scale(1,-1);
         g.translate(0, -height);
+        g.setPaint(Color.WHITE);
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        
         points.stream()
               .forEach(point -> {
                   if (point.isValid())
@@ -50,11 +53,11 @@ public class ImageGenerator
                       g.setPaint(Color.BLACK);
                       AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);
                       g.drawRect(aabb.getX(), aabb.getY(), aabb.getU() - aabb.getX(), (aabb.getV() - aabb.getY()));
-                      g.setPaint(Color.RED);
+                      g.setPaint(Color.BLUE);
                   }
                   else
                   {
-                      g.setPaint(Color.BLACK);
+                      g.setPaint(Color.RED);
                   }
                   g.setStroke(new BasicStroke(4));
                   g.fill(new Ellipse2D.Double(point.getX() - (POINT_SIZE / 2),
