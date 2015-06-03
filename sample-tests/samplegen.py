@@ -156,8 +156,8 @@ def append_point(x, y):
 if distribution == "random":
     for i in range(n):
         while 1:
-            x = randint(0, 10000)
-            y = randint(0, 10000)
+            x = randint(0, 9999)
+            y = randint(0, 9999)
             # Makes sure there are no duplicate points
             for p in points:
                 if x == p.x and y == p.y:
@@ -204,7 +204,7 @@ elif distribution == "hardest":
         for i, j in product(range(number_of_rows), range(number_of_columns)):
             if k > 0:
                 y = i * (height + 1)
-                x = width + j * width + (j + 1) % 2 * width
+                x = j * (width + 1) + (j + 1) % 2 * width
                 append_point(x, y)
                 k -= 1
             else:
@@ -215,8 +215,8 @@ elif distribution == "hardest":
         number_of_columns = 2 * floor(10000 / (2 * width + 1))
         for i, j in product(range(number_of_rows), range(number_of_columns)):
             if k > 0:
-                y = height + i * height + (i + 1) % 2 * height
-                x = width + j * width + (j + 1) % 2 * width
+                y = 1 + i * (height + 1) + (i + 1) % 2 * height
+                x = j * (width + 1) + (j + 1) % 2 * width
                 append_point(x, y)
                 k -= 1
             else:
@@ -261,8 +261,8 @@ elif distribution == "clustered":
     # Creates m clusters
     for j in range(0, m):
         while 1:
-            cluster_x = randint(0, 10000)
-            cluster_y = randint(0, 10000)
+            cluster_x = randint(0, 9999)
+            cluster_y = randint(0, 9999)
             new_cluster = Cluster(j, cluster_x, cluster_y)
             if isIsolated(new_cluster, 2 * radius):
                 if DEBUG:

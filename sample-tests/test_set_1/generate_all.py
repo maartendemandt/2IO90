@@ -18,15 +18,16 @@ os.chdir("./input")
 
 # Creates a sample from each line
 for line in sample_file.readlines()[1:]:
-    params = line.rstrip().split(";")
-    command = "samplegen.py"
-    command += " -pm " + params[0]
-    command += " -w " + params[1]
-    command += " -h " + params[2]
-    command += " -n " + params[3]
-    command += " -" + params[4]
-    command += " -" + params[5]
-    print(command)
-    subprocess.call("python ../../" + command)
+    if line:
+        params = line.rstrip().split(";")
+        command = "samplegen.py"
+        command += " -pm " + params[0]
+        command += " -w " + params[1]
+        command += " -h " + params[2]
+        command += " -n " + params[3]
+        command += " -" + params[4]
+        command += " -" + params[5]
+        print(command)
+        subprocess.call("python ../../" + command)
 
 sample_file.close()
