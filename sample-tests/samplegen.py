@@ -1,11 +1,12 @@
 import sys
-from random import randint
+from random import randint, seed
 from math import sqrt
 from math import floor
 from itertools import product
 
 DEBUG = False
 
+seed("1234")
 # Reads arguments
 itr = iter(sys.argv)
 while 1:
@@ -66,6 +67,16 @@ while 1:
     elif next == "-clustered":
         distribution = "clustered"
 
+    elif next == "-s":
+        try:
+            next = int(itr.__next__())
+            if next >= 1:
+                s = next
+            else:
+                raise ValueError
+        except:
+            sys.exit("[ERROR] bad value for -s (seed), should be a natural number >= 1")
+            
     elif next == "-m":
         try:
             next = int(itr.__next__())
@@ -114,6 +125,12 @@ try:
     distribution
 except NameError:
     sys.exit("[ERROR] distribution not defined")
+if distribution == "random" or distribution  == "clustered":
+    try:
+        s
+    except NameError:
+        print("[INFO] seed (-s) not defined, taking 1234 as default")
+        s = 1234
 if distribution == "clustered":
     try:
         m
@@ -140,6 +157,7 @@ output.append("number of points: " + str(n))
 print("generating...")
 
 if distribution == "random" or distribution == "clustered":
+    seed(s)
     # Creates a 2D-array that is used to make sure there are no duplicate points
     class Point:
         def __init__(self, x ,y):
@@ -193,46 +211,68 @@ elif distribution == "easiest":
                 k -= 1
             else:
                 break
+    
+    # In case that not all points are placed, n is still correct
+    n = n - k
 
 # Distributes points so that there is exactly one solution in which each point is labeled
 elif distribution == "hardest":
     k = n  # points yet to be placed
 
-    if model == "2pos":
-        number_of_rows = floor(10000 / (height + 1))
-        number_of_columns = 2 * floor(10000 / (2 * width + 2))
-        for i, j in product(range(number_of_rows), range(number_of_columns)):
-            if k > 0:
-                y = i * (height + 1)
-                x = j * (width + 1) + (j + 1) % 2 * width
-                append_point(x, y)
-                k -= 1
-            else:
-                break
+    # if model == "2pos":
+        # number_of_rows = floor(10000 / (height + 1))
+        # number_of_columns = 2 * floor(10000 / (2 * width + 2))
+        # for i, j in product(range(number_of_rows), range(number_of_columns)):
+            # if k > 0:
+                # y = i * (height + 1)
+                # x = j * (width + 1) + (j + 1) % 2 * width
+                # append_point(x, y)
+                # k -= 1
+            # else:
+                # break
 
-    elif model == "4pos":
-        number_of_rows = 2 * floor(10000 / (2 * height + 1))
-        number_of_columns = 2 * floor(10000 / (2 * width + 1))
-        for i, j in product(range(number_of_rows), range(number_of_columns)):
-            if k > 0:
-                y = 1 + i * (height + 1) + (i + 1) % 2 * height
-                x = j * (width + 1) + (j + 1) % 2 * width
-                append_point(x, y)
-                k -= 1
-            else:
-                break
+    # elif model == "4pos":
+        # number_of_rows = 2 * floor(10000 / (2 * height + 1))
+        # number_of_columns = 2 * floor(10000 / (2 * width + 1))
+        # for i, j in product(range(number_of_rows), range(number_of_columns)):
+            # if k > 0:
+                # y = 1 + i * (height + 1) + (i + 1) % 2 * height
+                # x = j * (width + 1) + (j + 1) % 2 * width
+                # append_point(x, y)
+                # k -= 1
+            # else:
+                # break
 
-    elif model == "1slider":
-        number_of_rows = floor((10000 - 0.5 * height) / (height + 1))
-        number_of_columns = floor((10000 - 0.5 * width) / (width + 1))
-        for i, j in product(range(number_of_rows), range(number_of_columns)):
-            if k > 0:
-                y = i * (height + 1) + (j + 1) % 2 * floor(0.5 * height)
-                x = width + j * (width + 1) + i % 2 * floor(0.5 * width)
-                append_point(x, y)
-                k -= 1
-            else:
-                break
+    # elif model == "1slider":
+    number_of_rows = floor(10000 / (2.5 * height + 3))
+    number_of_columns = floor((10000 - 2.5 * width) / (0.5 * width + 1))
+    for i, j in product(range(number_of_rows), range(number_of_columns)):
+        if k > 0:
+            y = i * floor(2.5 * height + 3)
+            x = 2 * width + j * floor(0.5 * width + 1)
+            if j % 5 == 0:
+                y += 1 + 1 * height
+            elif j % 5 == 1:
+                y += 2 + 2 * height
+            elif j % 5 == 2:
+                y += 1 + floor(0.5 * height)
+            elif j % 5 == 3:
+                y += 2 + floor(1.5 * height)
+            elif j % 5 == 4:
+                y += 0
+            if model == "2pos" or model == "4pos":
+                x -= randint(0, 1) * width
+            if model == "4pos":
+                y += randint(0, 1) * height
+            if model == "1slider":
+                x -= randint(0, width)
+            append_point(x, y)
+            k -= 1
+        else:
+            break
+                
+    # In case that not all points are placed, n is still correct            
+    n = n - k
 
 # Distributes the points over m isolated clusters
 elif distribution == "clustered":
@@ -288,6 +328,7 @@ elif distribution == "clustered":
                         append_point(x, y)
                         break
                 break
+
 
 # Writes to file
 file_name = "sample-" + model + "-w" + str(width) + "-h" + str(height) + "-n" + str(n) + "-" + distribution + "-" + algorithm + ".txt"
