@@ -67,7 +67,7 @@ public class AnnealingAlgorithm implements IAlgorithm
             //s.bumpPhase();
         }
         //s.kill();
-        System.out.println("max quality: "+maxQuality);
+        System.out.println("Max quality: "+maxQuality);
         return bestSolution;
     }
 

@@ -72,7 +72,7 @@ public class Solution implements Iterable<Point>
 
     public void printAverage()
     {
-        System.out.println("Average: " + times.stream().mapToDouble(l -> l).average().getAsDouble() + "ns.");
+        System.out.println(times.stream().mapToDouble(l -> l).average().getAsDouble());
     }
 
     public boolean isPossible(Point point)
