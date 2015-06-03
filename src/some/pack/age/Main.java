@@ -74,10 +74,14 @@ public class Main
         {
             throw new IllegalArgumentException("Number was not a valid integer", ex);
         }
-
-        while (n-- > 0)
-        {
-            labeler.addPoint(input.nextInt(), input.nextInt());
+             
+        try{
+            while (n-- > 0)
+            {
+                labeler.addPoint(input.nextInt(), input.nextInt());
+            }
+        } catch (Exception e){
+            System.err.println("Amount of points supplied less than n");
         }
         for (String line : echo)
         {
