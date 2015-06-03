@@ -18,7 +18,7 @@ if not os.path.exists("./output"):
 # Runs all samples through labeling program
 for s in samples:
     algorithm = s.rstrip().split("-")[6][0:-4]
-    command = "java -jar ../../dist/2IO90.jar --file=input/" + s + " --out --force-algorithm=" + algorithm
+    command = "java -jar ../../dist/2IO90.jar --file=input/" + s + " --image --out --force-algorithm=" + algorithm
     print(command)
     subprocess.call(command)
 
@@ -27,7 +27,7 @@ extraction = []
 # Extraction is started
 for sample_name in samples:
     sample_file = open("./output/" + sample_name)
-    line_data = ["" for _ in range(8)]
+    line_data = ["" for _ in range(9)]
 
     # Retrieves distribution from file name
     distribution = sample_name.split("-")[5]
@@ -48,9 +48,10 @@ for sample_name in samples:
         if line.startswith("Algorithm used"):
             line_data[5] = val
         if line.startswith("Number of labels placed"):
-            line_data[6] = str(int(val) / int(line_data[3]))
+            line_data[6] = val
+            line_data[7] = str(int(val) / int(line_data[3]))
         if line.startswith("Running time"):
-            line_data[7] = val
+            line_data[8] = val
 
     sample_file.close()
 
@@ -58,6 +59,6 @@ for sample_name in samples:
     extraction.append(";".join(line_data))
 
 csv_file = open("samples.csv", "w")
-csv_file.write("Placement model;Width;Height;Number of points;Distribution;Algorithm;Quality;Running time(ns)\n")
+csv_file.write("Placement model;Width;Height;Number of points;Distribution;Algorithm;Labels placed;Quality;Running time(ns)\n")
 csv_file.write("\n".join(extraction))
 csv_file.close()
