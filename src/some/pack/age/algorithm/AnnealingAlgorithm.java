@@ -10,7 +10,7 @@ import java.util.Set;
 import some.pack.age.models.solutionChange;
 
 /**
- * @author DarkSeraphim.
+ * @author G to the Foks and J to the Adegeest
  */
 public class AnnealingAlgorithm implements IAlgorithm
 {
@@ -23,7 +23,7 @@ public class AnnealingAlgorithm implements IAlgorithm
         
         //#ADDED
         long startTime = System.currentTimeMillis(); //JG
-        double numberOfMinutes = 0.1; //JG
+        double numberOfMinutes = 4.9; //JG
         //end
         
         Solution solution = getRandomSolution(width, height, points);
@@ -39,7 +39,7 @@ public class AnnealingAlgorithm implements IAlgorithm
         System.out.println("Quality at start: " + maxQuality);
         //Scheduler s = new Scheduler();
         //s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
-        while (annualSchedule(temperature, minTemperature)){
+        while (annualSchedule(temperature, minTemperature) && solutionQuality != points.size() ){
             solutionChange toChange = getNeighborSolutions(solution);
             solution = toChange.execute(solution);
             
@@ -158,6 +158,7 @@ public class AnnealingAlgorithm implements IAlgorithm
     double calculateTemperature(double initialTemperature, long startTime, double numberOfMinutes) {
         long currentTime = System.currentTimeMillis();
         long timePassed = currentTime - startTime;
+        
 
         return initialTemperature - (initialTemperature * (timePassed/(60000*numberOfMinutes)));
     }
