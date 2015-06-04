@@ -94,39 +94,19 @@ public class Node {
         return se;
     }
     
-    public Boolean hasNe() {
-        if(ne==null){
-            return false;
-        }
-        else {
-            return true;
-        }
+    public boolean hasNe() {
+        return this.ne != null;
     }
 
-    public Boolean hasNw() {
-        if(nw==null){
-            return false;
-        }
-        else {
-            return true;
-        }
+    public boolean hasNw() {
+        return this.nw != null;
     }
 
-    public Boolean hasSw() {
-        if(sw==null){
-            return false;
-        }
-        else {
-            return true;
-        }
+    public boolean hasSw() {
+        return this.sw != null;
     }
 
-    public Boolean hasSe() {
-        if(se==null){
-            return false;
-        }
-        else {
-            return true;
-        }
+    public boolean hasSe() {
+        return this.se != null;
     }
 }

@@ -142,17 +142,17 @@ public class PosPoint extends Point<PosPoint>
         return new PosPoint(this, LabelPosition.NONE);
     }
 
-    public List<Point> getCandidates(Solution solution)
+    public List<Point<?>> getCandidates(Solution solution)
     {
         final PosPoint self = this;
         if (!this.four)
         {
-            return new ArrayList<Point>(){{
+            return new ArrayList<Point<?>>(){{
                 add(self);
                 add(new PosPoint(self, self.pos.getOtherTwoPos()));
             }};
         }
-        return new ArrayList<Point>() {{
+        return new ArrayList<Point<?>>() {{
             add(new PosPoint(self, LabelPosition.NORTH_EAST));
             add(new PosPoint(self, LabelPosition.NORTH_WEST));
             add(new PosPoint(self, LabelPosition.SOUTH_WEST));

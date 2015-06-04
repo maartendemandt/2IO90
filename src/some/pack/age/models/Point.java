@@ -70,5 +70,5 @@ public abstract class Point<T extends Point>
         return result;
     }
 
-    public abstract List<Point> getCandidates(Solution solution);
+    public abstract List<Point<?>> getCandidates(Solution solution);
 }
