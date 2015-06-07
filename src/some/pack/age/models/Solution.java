@@ -92,7 +92,7 @@ public class Solution implements Iterable<Point>
     {
         long start = System.nanoTime();
         AxisAlignedBB box = point.getAABB(this.width, this.height);
-        for (Point other : this.points)
+        for (Point other : this.neighbours.get(point))
         {
             if (other.equals(point) || !other.isValid())
             {
@@ -127,7 +127,7 @@ public class Solution implements Iterable<Point>
 
     public Set<Point<?>> getNeighbours(Point point)
     {
-        return null;
+        return this.neighbours.get(point);
     }
 
     public List<Point<?>> getConflicts(Point candidate)
