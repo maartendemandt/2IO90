@@ -7,49 +7,50 @@ import java.util.Optional;
 /**
  * @author DarkSeraphim.
  */
-public class SliderPoint extends Point<SliderPoint>
+public class SliderLabel extends AbstractLabel<SliderLabel>
 {
 
     private static final int PRECISION = 100;
 
     private final Optional<Float> slider;
 
-    public SliderPoint(int x, int y)
+    public SliderLabel(int x, int y)
     {
         this(x, y, Optional.empty());
     }
 
-    private SliderPoint(int x, int y, float slider)
+    private SliderLabel(int x, int y, float slider)
     {
         this(x, y, Optional.of(slider));
     }
 
-    public SliderPoint(int x, int y, Optional<Float> slider)
+    public SliderLabel(int x, int y, Optional<Float> slider)
     {
         super(x, y);
         this.slider = slider;
     }
 
-    private SliderPoint(SliderPoint point)
+    private SliderLabel(SliderLabel point)
     {
-        this(point.x, point.y, point.slider);
+        this(point.getX(), point.getY(), point.slider);
     }
 
-    public SliderPoint(SliderPoint point, float slider)
+    public SliderLabel(SliderLabel point, float slider)
     {
-        this(point.x, point.y, slider);
+        this(point.getX(), point.getY(), slider);
     }
 
     private Optional<Point> getRandomExcept(Solution solution, Optional<Float> except)
     {
+        int start = ThreadLocalRandom.current().nextInt(PRECISION);
         for (int i = 0; i < PRECISION; i++)
         {
-            float f = (float)i / PRECISION;
+            float f = (float)((start + i) % PRECISION) / PRECISION;
             if (except.isPresent() && same(f, except.get()))
             {
                 continue;
             }
-            SliderPoint point = new SliderPoint(this, f);
+            SliderLabel point = new SliderLabel(this, f);
             if (solution.isPossible(point))
             {
                 return Optional.of(point);
@@ -85,13 +86,13 @@ public class SliderPoint extends Point<SliderPoint>
         return new AxisAlignedBB(x, this.y, u, v);
     }
 
-    public SliderPoint getDefault()
+    public SliderLabel getDefault()
     {
-        return new SliderPoint(this.x, this.y, Optional.empty());
+        return new SliderLabel(this.x, this.y, Optional.empty());
     }
 
     @Override
-    public boolean isClone(SliderPoint point)
+    public boolean isClone(SliderLabel point)
     {
         return this.equals(point) && this.slider.isPresent() == point.slider.isPresent() && sameSlider(this.slider.get(), point.slider.get());
     }
