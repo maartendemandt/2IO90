@@ -12,8 +12,9 @@ public class QuadTree {
     private int insertedPoints = 0;
     
     public void insert(Point point) {     
-        if(insertedPoints == 0){
+        if(this.root == null){
             root = new Node(point.getX(), point.getY(), point, null);
+            this.insertedPoints++;
         }
         else {
             getInsertLeaf(point, root);
