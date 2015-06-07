@@ -1,5 +1,7 @@
 package some.pack.age.models;
 
+import some.pack.age.quadtree.QuadTree;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +24,8 @@ public class Solution implements Iterable<Point>
     protected final Set<Point> points;
 
     protected final Map<Point, List<Point>> collisions = new HashMap<>();
+    
+    private Map<Point<?>, Set<Point<?>>> neighbours;
 
     public Solution(int width, int height)
     {
@@ -38,6 +42,15 @@ public class Solution implements Iterable<Point>
         this.width = width;
         this.height = height;
         this.points = new HashSet<>(points);
+        QuadTree quadTree = new QuadTree();
+        for (Point<?> point : points) {
+            quadTree.insert(point);
+        }
+        this.neighbours = new HashMap<>();
+        for (Point<?> point : points)
+        {
+            this.neighbours.put(point, quadTree.intersect(point, width, height));
+        }
     }
 
     public double getQuality()
