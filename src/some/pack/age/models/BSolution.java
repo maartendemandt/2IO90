@@ -41,11 +41,6 @@ public class BSolution extends Solution
         getCandidates(point).remove(point);
     }
 
-    public Set<Point<?>> getNeighbours(Point point)
-    {
-        return this.neighbours.get(point);
-    }
-
     public List<Point<?>> getConflicts(Point candidate)
     {
         List<Point<?>> conflicts = new ArrayList<>();
