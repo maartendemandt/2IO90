@@ -6,69 +6,63 @@ import java.util.Optional;
 /**
  * @author DarkSeraphim.
  */
-public abstract class Point<T extends Point>
+public interface Point
 {
-    protected final int x;
-
-    protected final int y;
-
-    public Point(int x, int y)
+    
+    private class PointImpl
     {
-        this.x = x;
-        this.y = y;
-    }
+        protected final int x;
 
-    private Point(Point point)
-    {
-        this(point.x, point.y);
-    }
-
-    public int getX()
-    {
-        return this.x;
-    }
-
-    public int getY()
-    {
-        return this.y;
-    }
-
-    public String toString()
-    {
-        return String.format("%d %d NIL", this.x, this.y);
-    }
-
-    public abstract Optional<Point> getRandomFreeLabel(Solution solution);
-
-    public abstract Optional<Point> getMutation(Solution solution);
-
-    public abstract boolean isValid();
-
-    public abstract AxisAlignedBB getAABB(int width, int height);
-
-    public abstract T getDefault();
-
-    @Override
-    public final boolean equals(Object object)
-    {
-        if (!(object instanceof Point))
+        protected final int y;
+    
+        public PointImpl(int x, int y)
         {
-            return false;
+            this.x = x;
+            this.y = y;
         }
-        Point point = (Point) object;
-        return point.x == this.x && point.y == this.y;
+    
+        private PointImpl(Point point)
+        {
+            this(point.x, point.y);
+        }
+    
+        public int getX()
+        {
+            return this.x;
+        }
+        
+        public int getY()
+        {
+            return this.y;
+        }
+        
+        @Override
+        public final boolean equals(Object object)
+        {
+            if (!(object instanceof Point))
+            {
+                return false;
+            }
+            Point point = (Point) object;
+            return point.x == this.x && point.y == this.y;
+        }
+        
+        @Override
+        public final int hashCode()
+        {
+            int result = 19;
+            result = 37 * result + x;
+            result = 37 * result + y;
+            return result;
+        }
     }
-
-    public abstract boolean isClone(T point);
-
-    @Override
-    public final int hashCode()
+    
+    public int getX();
+    
+    public int getY();
+    
+    public static Point construct(int x, int y)
     {
-        int result = 19;
-        result = 37 * result + x;
-        result = 37 * result + y;
-        return result;
+        return new PointImpl(x, y);
     }
-
-    public abstract List<Point<?>> getCandidates(Solution solution);
 }
