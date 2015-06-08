@@ -12,8 +12,9 @@ public class QuadTree {
     private int insertedPoints = 0;
     
     public void insert(Point point) {     
-        if(insertedPoints == 0){
+        if(this.root == null){
             root = new Node(point.getX(), point.getY(), point, null);
+            this.insertedPoints++;
         }
         else {
             getInsertLeaf(point, root);
@@ -84,10 +85,9 @@ public class QuadTree {
     }
     
     public Set<Point<?>> intersectQuadrant(Point point, Node node, int xMax, int xMin, int yMax, int yMin, Set<Point<?>> reporter){
-        boolean neighbour = false;
         if(node.getX() <= xMax && node.getX() >= xMin && node.getY() <= yMax && node.getY() >= yMin){
-            //Point Inside
-            neighbour = true;
+            //Point inside the region, report it
+            reporter.add(node);
             /* if(node.hasNe()){
                 intersectQuadrant(point, node.getNe(), xMax, xMin, yMax, yMin);
             }
@@ -101,6 +101,10 @@ public class QuadTree {
                 intersectQuadrant(point, node.getSw(), xMax, xMin, yMax, yMin);
             } */
         }
+        
+        // Use AABB check?
+        // What if the region overlaps multiple quadrants? (AABB check again?)
+        
         if(point.getX() <= node.getX()  && node.getY() > point.getY()){
             if(node.hasNw()){
                 intersectQuadrant(point, node.getNw(), xMax, xMin, yMax, yMin, reporter);
