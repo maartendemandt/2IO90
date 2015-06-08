@@ -1,46 +1,56 @@
 package some.pack.age.models;
 
+import java.util.Optional;
+import some.pack.age.LabelPosition;
+
 public class LabelState
 {
-    private final Runnable change;
+    private final Runnable update;
     
-    private LabelState(Runnable change)
+    private final Runnable undo;
+    
+    private LabelState(Runnable update, Runnable undo)
     {
-        this.change = change;
+        this.update = update;
+        this.undo = undo;
     }
     
     public void update()
     {
-        this.change.run();
+        this.update.run();
     }
     
-    public static LabelChange preparePosRemoval(PosLabel label)
+    public void undo()
     {
-        return new LabelState(() -> {
-            label.remove();
-        });
+        this.undo.run();
     }
     
-    public static LabelChange preparePosChange(PosLabel label, LabelPosition newPosition)
+    public static LabelState preparePosRemoval(PosLabel label)
     {
+        final LabelPosition old = label.getPosition();
+        return new LabelState(() -> label.remove(), () -> label.setPosition(old));
+    }
+    
+    public static LabelState preparePosChange(PosLabel label, LabelPosition newPosition)
+    {
+        final LabelPosition old = label.getPosition();
         if (newPosition == LabelPosition.NONE) throw new IllegalArgumentException("useUse preparePosRemove!");
-        return new LabelState(() -> {
-            label.setPosition(newPosition);
-        });
+        return new LabelState(() -> label.setPosition(newPosition), () -> label.setPosition(oldPosition));
     }
     
-    public static LabelChange prepareSliderRemoval(SliderLabel label) 
+    public static LabelState prepareSliderRemoval(SliderLabel label) 
     {
-        return new LabelState(() -> {
-            label.remove();
-        });
+        final Optional<Float> old = label.getSlider();
+        return new LabelState(() -> label.remove(), () -> label.setSlider(old.get()));
     }
     
-    public static LabelChange prepareSliderChange(SliderLabel label, float slider) 
+    public static LabelState prepareSliderChange(SliderLabel label, float slider) 
     {
-    if (slider < 0 || slider > 1) throw new IllegalArgumentException("Illegal slider value: " + slider);
-        return new LabelState(() -> {
-            label.setSlider(slider);
-        });
+        if (slider < 0 || slider > 1) 
+        {
+            throw new IllegalArgumentException("Illegal slider value: " + slider);
+        }
+        final Optional<Float> old = label.getSlider();
+        return new LabelState(() -> label.setSlider(slider), () -> label.setSlider(old));
     }
 }

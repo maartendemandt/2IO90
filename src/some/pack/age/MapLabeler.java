@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import some.pack.age.models.AbstractLabel;
+import some.pack.age.util.ConvertedSet;
 
 /**
  * @author DarkSeraphim.
@@ -156,7 +158,7 @@ public class MapLabeler
 
     public Solution computePoints()
     {
-        return this.algorithm.computePoints(new HashSet<>(this.points), this.width, this.height);
+        return this.algorithm.computePoints(new ConvertedSet<>(new HashSet<>(this.points), AbstractLabel.class), this.width, this.height);
     }
 
     public Set<Point> getPoints()

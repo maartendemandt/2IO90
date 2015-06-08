@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface Point
 {
     
-    private class PointImpl
+    static class PointImpl implements Point
     {
         protected final int x;
 
@@ -23,14 +23,16 @@ public interface Point
     
         private PointImpl(Point point)
         {
-            this(point.x, point.y);
+            this(point.getX(), point.getY());
         }
     
+        @Override
         public int getX()
         {
             return this.x;
         }
         
+        @Override
         public int getY()
         {
             return this.y;
@@ -44,7 +46,7 @@ public interface Point
                 return false;
             }
             Point point = (Point) object;
-            return point.x == this.x && point.y == this.y;
+            return point.getX() == this.x && point.getY() == this.y;
         }
         
         @Override

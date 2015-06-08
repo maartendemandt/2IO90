@@ -64,14 +64,15 @@ public class QuadTree {
         }
     }
     
-    public Set<Point<?>> intersect(Point point, int width, int height) {
+    public Set<Point> intersect(final Point point, int width, int height) {
         int xMax = point.getX() + 2 * width;
         int xMin = point.getX() - 2 * width;
         int yMax = point.getY() + 2 * height;
         int yMin = point.getY() - 2 * height;
-        Set<Point<?>> reporter = new HashSet<Point<?>>()
+        Set<Point> reporter = new HashSet<Point>()
         {
-            public boolean add(Point<?> point1)
+            @Override
+            public boolean add(Point point1)
             {
                 // Do not allow the point we are searching for to be found
                 if (point1.equals(point))
@@ -84,10 +85,10 @@ public class QuadTree {
         return intersectQuadrant(point, root, xMax, xMin, yMax, yMin, reporter);
     }
     
-    public Set<Point<?>> intersectQuadrant(Point point, Node node, int xMax, int xMin, int yMax, int yMin, Set<Point<?>> reporter){
+    public Set<Point> intersectQuadrant(Point point, Node node, int xMax, int xMin, int yMax, int yMin, Set<Point> reporter){
         if(node.getX() <= xMax && node.getX() >= xMin && node.getY() <= yMax && node.getY() >= yMin){
             //Point inside the region, report it
-            reporter.add(node);
+            reporter.add(node.getPoint());
             /* if(node.hasNe()){
                 intersectQuadrant(point, node.getNe(), xMax, xMin, yMax, yMin);
             }

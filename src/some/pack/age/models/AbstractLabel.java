@@ -17,7 +17,7 @@ public abstract class AbstractLabel<T extends AbstractLabel> implements Point
 
     private AbstractLabel(Point point)
     {
-        this(point.x, point.y);
+        this(point.getX(), point.getY());
     }
 
     @Override
@@ -66,5 +66,5 @@ public abstract class AbstractLabel<T extends AbstractLabel> implements Point
         return this.point.hashCode();
     }
 
-    public abstract List<Point<?>> getCandidates(Solution solution);
+    public abstract List<AbstractLabel<T>> getCandidates(Solution solution);
 }

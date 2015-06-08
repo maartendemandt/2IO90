@@ -1,13 +1,14 @@
 package some.pack.age.algorithm;
 
 import some.pack.age.models.AxisAlignedBB;
-import some.pack.age.models.BSolution;
+import some.pack.age.models.EIL3Solution;
 import some.pack.age.models.Point;
 import some.pack.age.models.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import some.pack.age.models.AbstractLabel;
 
 /**
  * @author DarkSeraphim.
@@ -16,13 +17,13 @@ import java.util.Set;
 public class ThreePlusOneAlgorithm implements IAlgorithm
 {
     // Array which contains all the changes points which haven't been processed again
-    private final List<Point<?>> changes = new ArrayList<>();
+    private final List<AbstractLabel> changes = new ArrayList<>();
 
     @Override
-    public Solution computePoints(Set<Point> points, int width, int height)
+    public Solution computePoints(Set<AbstractLabel> points, int width, int height)
     {
 
-        BSolution solution = new BSolution(width, height, getInput(points));
+        EIL3Solution solution = new EIL3Solution(width, height, getInput(points));
         // Should initialize the candidates for the point
         solution.forEach(solution::getCandidates);
 
@@ -31,16 +32,16 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         // ******* //
 
         // Apply rules to each point in input
-        for (Point point : solution)
+        for (AbstractLabel label : solution)
         {
-            Point old = point;
-            point = applyRule1(solution, point); // Apply Rule 1 (L1)
-            point = applyRule2(solution, point); // Apply Rule 2 (L2)
-            point = applyRule3(solution, point, width, height); // Apply Rule 3 (L3)
+            AbstractLabel<?> old = label;
+            label = applyRule1(solution, label); // Apply Rule 1 (L1)
+            label = applyRule2(solution, label); // Apply Rule 2 (L2)
+            label = applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
 
-            if (old.isClone(point)) {
+            if (old.isClone(label)) {
                 // update point to newPoint
-                solution.change(old, point);
+                solution.change(old, label);
             }
 
             // Apply rules to points in arrayOfChanges
@@ -55,11 +56,11 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         while (checkPhase2(solution))
         {
             int maxCandidates = 0;
-            List<Point> pointsMostCandidates = new ArrayList<>();
+            List<AbstractLabel<?>> labelsMostCandidates = new ArrayList<>();
 
             // Find points with heighest amount of candidates
-            for (Point<?> point : solution) {
-                List<Point<?>> candidates = solution.getCandidates(point);
+            for (AbstractLabel<?> point : solution) {
+                List<AbstractLabel<?>> candidates = solution.getCandidates(point);
                 int numOfCandidates = candidates.size();
 
                 // if number of candidates is larger than the current maximum of candidates found --> empty array, add point to array and set new maximum
@@ -67,22 +68,22 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
                 {
                     if (maxCandidates > numOfCandidates)
                     {
-                        pointsMostCandidates.clear();
+                        labelsMostCandidates.clear();
                     }
-                    pointsMostCandidates.add(point);
+                    labelsMostCandidates.add(point);
                     maxCandidates = numOfCandidates;
                 }
             }
 
             // For each point with most candidates delete candidate with maximum number of conflicts
-            for (Point<?> point : pointsMostCandidates) {
+            for (AbstractLabel<?> point : labelsMostCandidates) {
                 // Get candidates of point
-                List<Point<?>> candidates = solution.getCandidates(point);
-                Point candidateMostConflicts = null;
+                List<AbstractLabel<?>> candidates = solution.getCandidates(point);
+                AbstractLabel<?> candidateMostConflicts = null;
                 int maxNumberOfConflicts = 0;
 
                 // Get candidate with most conflicts
-                for (Point candidate : candidates) {
+                for (AbstractLabel<?> candidate : candidates) {
                     int numOfConflicts = solution.getConflicts(candidate).size();
                     if (candidateMostConflicts == null) { // First label processed so just store it
                         candidateMostConflicts = candidate;
@@ -113,19 +114,19 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         return solution;
     }
 
-    List<Point<?>> getInput(Set<Point> input)
+    List<AbstractLabel<?>> getInput(Set<AbstractLabel<?>> input)
     {
-        List<Point<?>> points = new ArrayList<>();
-        for (Point<?> point : input) {
+        List<AbstractLabel<?>> points = new ArrayList<>();
+        for (AbstractLabel<?> point : input) {
             // Add per point 2 or 4 candidates (depending on the model)
             points.add(point.getDefault());
         }
         return points;
     }
 
-    Point applyRule1(BSolution solution, Point<?> point) {
+    AbstractLabel<?> applyRule1(EIL3Solution solution, AbstractLabel<?> point) {
         // Iterate over all points
-        for (Point candidate : solution.getCandidates(point)) {
+        for (AbstractLabel<?> candidate : solution.getCandidates(point)) {
             // Remove all candidates of point except the candidate with no conflicts
             if (solution.isPossible(candidate))
             {
@@ -140,14 +141,14 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         return point;
     }
 
-    Point applyRule2(BSolution solution, Point<?> point) {
-        for (Point candidate : solution.getCandidates(point)) {
+    AbstractLabel<?> applyRule2(EIL3Solution solution, AbstractLabel<?> point) {
+        for (AbstractLabel<?> candidate : solution.getCandidates(point)) {
             // This will store the label which makes sure the candidate can be part of the end solution
-            Point conflictSolver = null;
+            AbstractLabel<?> conflictSolver = null;
 
             // Get the conflicts of the candidate
-            List<Point<?>> conflicts = solution.getConflicts(candidate);
-            Point<?> pointConflictedLabel = null;
+            List<AbstractLabel<?>> conflicts = solution.getConflicts(candidate);
+            AbstractLabel<?> pointConflictedLabel = null;
 
             // Check if there is only conflict, if so, check if it can be eliminated with rule 2
             if (conflicts.size() == 1) {
@@ -159,7 +160,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
                 for (Point candidateConflictPoint : solution.getCandidates(pointConflictedLabel)) {
                     // Check if its not the label which was in conflict with the candidate
                     if (!candidateConflictPoint.isClone(conflicts.get(0)) && candidateConflictPoint.equals(conflicts.get(0))) {
-                        List<Point<?>> conflictsCandidateConflictPoint = solution.getConflicts(candidateConflictPoint);
+                        List<AbstractLabel<?>> conflictsCandidateConflictPoint = solution.getConflicts(candidateConflictPoint);
 
                         // Variable to check if all conflicts can be avoided with rule 2
                         boolean useableCandidate = true;
@@ -204,7 +205,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         return point;
     }
 
-    Point applyRule3(BSolution solution, Point<?> point, int width, int height) {
+    Point applyRule3(EIL3Solution solution, Point<?> point, int width, int height) {
         // Get candidates of point
         List<Point<?>> candidates = solution.getCandidates(point);
 
@@ -237,7 +238,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         return point;
     }
 
-    void processArrayOfChanges(BSolution solution, int width, int height)
+    void processArrayOfChanges(EIL3Solution solution, int width, int height)
     {
         for(Point point : changes)
         {
@@ -254,7 +255,7 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         changes.clear();
     }
 
-    boolean checkPhase2(BSolution solution)
+    boolean checkPhase2(EIL3Solution solution)
     {
         for (Point<?> point : solution)
         {

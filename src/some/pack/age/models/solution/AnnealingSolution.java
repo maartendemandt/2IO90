@@ -8,8 +8,8 @@ import java.util.*;
 public class AnnealingSolution extends Solution
 {
 
-    private int oldQuality = 0;
-
+    private double oldQuality;
+    
     private SolutionChange lastChange = new SolutionChange();
 
     public AnnealingSolution(int width, int height)
@@ -22,14 +22,14 @@ public class AnnealingSolution extends Solution
         super(other);
     }
 
-    public AnnealingSolution(int width, int height, Set<Point<?>> points) {
-        super(width, height, new HashSet<>(points));
+    public AnnealingSolution(int width, int height, Set<AbstractLabel<?>> points) {
+        super(width, height, points);
     }
     
-    public void change(LabelState current, LabelState next)
+    public void change(AbstractLabel current, AbstractLabel next)
     {
         this.oldQuality = this.getQuality();
-        this.lastChange.set(old, next);
+        this.lastChange.set();
     }
     
     public void reset()

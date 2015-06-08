@@ -7,7 +7,8 @@ import some.pack.age.test.Scheduler;
 
 import java.util.Optional;
 import java.util.Set;
-import some.pack.age.models.solutionChange;
+import some.pack.age.models.AbstractLabel;
+import some.pack.age.models.SolutionChange;
 
 /**
  * @author G to the Foks and J to the Adegeest
@@ -15,7 +16,7 @@ import some.pack.age.models.solutionChange;
 public class AnnealingAlgorithm implements IAlgorithm
 {
     @Override
-    public Solution computePoints(Set<Point> points, int width, int height)
+    public Solution computePoints(Set<AbstractLabel> points, int width, int height)
     {
         // NEIGHBOUR SOLUTION IMPROVEMENT
         double solutionQuality;
@@ -40,7 +41,7 @@ public class AnnealingAlgorithm implements IAlgorithm
         //Scheduler s = new Scheduler();
         //s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
         while (annualSchedule(temperature, minTemperature) && solutionQuality != points.size() ){
-            solutionChange toChange = getNeighborSolutions(solution);
+            SolutionChange toChange = getNeighborSolutions(solution);
             solution = toChange.execute(solution);
             
             maxQuality = Math.max(solution.getQuality(), maxQuality);
@@ -76,19 +77,19 @@ public class AnnealingAlgorithm implements IAlgorithm
 //TODO: uitzoeken wat een goed annealig schedule is. (temperature en decrease rate en waneer we stoppen)
 
     //generates a random solution
-    Solution getRandomSolution(int width, int height, Set<Point> problem){
+    Solution getRandomSolution(int width, int height, Set<AbstractLabel> problem){
         Solution solution = new Solution(width, height);
 
         int i = 0;
-        for(Point point : problem) {
-            Optional<Point> p = point.getRandomFreeLabel(solution);
-            if (p.isPresent())
+        for(AbstractLabel label : problem) {
+            Optional<AbstractLabel> optionalLabel = label.getRandomFreeLabel(solution);
+            if (optionalLabel.isPresent())
             {
-                solution.add(p.get());
+                solution.add(optionalLabel.get());
             }
             else
             {
-                solution.add(point.getDefault());
+                solution.add(label.getDefault());
             }
         }
 
@@ -117,18 +118,18 @@ public class AnnealingAlgorithm implements IAlgorithm
     }
 
 
-    solutionChange getNeighborSolutions(Solution solution){
+    SolutionChange getNeighborSolutions(Solution solution){
         //get a random point that has an option to change the label position
-        Point p = solution.getRandomPoint(); //TODO alleen interessnten punten teruggeven
+        AbstractLabel label = solution.getRandomLabel(); //TODO alleen interessnten punten teruggeven
         //change the current label with a random other label that has no conflicts
-        Optional<Point> point = p.getMutation(solution);
+        Optional<Point> point = label.getMutation(solution);
         if (point.isPresent())
         {
-            return new solutionChange(p, point.get());
+            return new SolutionChange(label, point.get());
         }
         else
         {
-            return new solutionChange(p);
+            return new SolutionChange(label);
         }
     }
 

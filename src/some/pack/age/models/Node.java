@@ -6,8 +6,8 @@ import some.pack.age.models.Point;
 public class Node {
 
     // We could use Optional here instead of null values
-    private double x;
-    private double y;
+    private int x;
+    private int y;
     private Node opt_parent;
     private Point point;
     private NodeType nodetype;
@@ -21,7 +21,7 @@ public class Node {
     private int maxX;
     private int maxY;
 
-    public Node(double x, double y, Point point, Node opt_parent) {
+    public Node(int x, int y, Point point, Node opt_parent) {
         this.minX = this.maxX = this.x = x;
         this.minY = this.maxY = this.y = y;
         this.point = point;
@@ -34,7 +34,7 @@ public class Node {
 
     // The setters should not be called, they could break the 
     // representation invariant of the QuadTree
-    public void setX(double x) {
+    public void setX(int x) {
         this.x = x;
     }
 
@@ -42,7 +42,7 @@ public class Node {
         return y;
     }
 
-    public void setY(double y) {
+    public void setY(int y) {
         this.y = y;
     }
 

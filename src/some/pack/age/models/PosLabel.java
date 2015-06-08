@@ -15,7 +15,7 @@ public class PosLabel extends AbstractLabel<PosLabel>
 
     private final boolean four;
 
-    private final LabelPosition pos;
+    private LabelPosition pos;
 
     private PosLabel(int x, int y, boolean four)
     {
@@ -35,10 +35,25 @@ public class PosLabel extends AbstractLabel<PosLabel>
     {
         this(point.getX(), point.getY(), newPos, point.four);
     }
+    
+    public LabelPosition getPosition()
+    {
+        return this.pos;
+    }
+    
+    public void remove()
+    {
+        this.setPosition(LabelPosition.NONE);
+    }
+    
+    public void setPosition(LabelPosition pos)
+    {
+        this.pos = pos;
+    }
 
     public String toString()
     {
-        return String.format("%d %d %s", this.x, this.y, this.pos.toString());
+        return String.format("%d %d %s", this.getX(), this.getY(), this.pos.toString());
     }
 
     private Optional<Point> getRandomExcept(Solution solution, LabelPosition exclude)
@@ -115,7 +130,7 @@ public class PosLabel extends AbstractLabel<PosLabel>
         }
         return mutation;
     }
-
+    
     @Override
     public AxisAlignedBB getAABB(int width, int height)
     {
@@ -142,17 +157,17 @@ public class PosLabel extends AbstractLabel<PosLabel>
         return new PosLabel(this, LabelPosition.NONE);
     }
 
-    public List<Point<?>> getCandidates(Solution solution)
+    public List<AbstractLabel<PosLabel>> getCandidates(Solution solution)
     {
         final PosLabel self = this;
         if (!this.four)
         {
-            return new ArrayList<Point<?>>(){{
+            return new ArrayList<AbstractLabel<PosLabel>>(){{
                 add(self);
                 add(new PosLabel(self, self.pos.getOtherTwoPos()));
             }};
         }
-        return new ArrayList<Point<?>>() {{
+        return new ArrayList<AbstractLabel<PosLabel>>() {{
             add(new PosLabel(self, LabelPosition.NORTH_EAST));
             add(new PosLabel(self, LabelPosition.NORTH_WEST));
             add(new PosLabel(self, LabelPosition.SOUTH_WEST));

@@ -1,5 +1,6 @@
 package some.pack.age.models;
 
+import org.junit.Before;
 import org.junit.Test;
 import some.pack.age.quadtree.QuadTree;
 
