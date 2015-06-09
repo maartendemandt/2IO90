@@ -2,8 +2,9 @@ package some.pack.age;
 
 import some.pack.age.models.AxisAlignedBB;
 import some.pack.age.models.Point;
-import some.pack.age.models.PosPoint;
-import some.pack.age.models.SliderPoint;
+import some.pack.age.models.labels.AbstractLabel;
+import some.pack.age.models.labels.PosLabel;
+import some.pack.age.models.labels.SliderLabel;
 import some.pack.age.test.ImageGenerator;
 
 import java.util.ArrayList;
@@ -23,9 +24,9 @@ import java.util.function.Predicate;
 public class Test
 {
 
-    private static List<Point> points = new ArrayList<>();
+    private static List<AbstractLabel> points = new ArrayList<>();
 
-    private static BiPredicate<Point, Point> doOverlap;
+    private static BiPredicate<AbstractLabel, AbstractLabel> doOverlap;
 
     private static Tracker counter = new Tracker();
 
@@ -33,7 +34,7 @@ public class Test
     {
         Scanner scanner = new Scanner(System.in);
         String model = scanner.nextLine().split(": ")[1];
-        Function<Scanner, Point> pointParser;
+        Function<Scanner, AbstractLabel> pointParser;
         switch (model)
         {
             case "2pos":
@@ -64,7 +65,7 @@ public class Test
         }
 
         points.stream()
-              .filter(Point::isValid)
+              .filter(AbstractLabel::isValid)
               .forEach(Test::checkPoint);
         System.out.println("Overlaps counted: " + counter);
         System.out.println("Do you want to generate an image? [y/n]:\t");
@@ -75,38 +76,38 @@ public class Test
         }
     }
 
-    private static void checkPoint(final Point point)
+    private static void checkPoint(final AbstractLabel point)
     {
 
-        Predicate<Point> notEquals = other -> !other.equals(point);
+        Predicate<AbstractLabel> notEquals = other -> !other.equals(point);
 
-        Consumer<Point> report = other -> System.out.printf("Label {%s} overlaps with label {%s}\r\n", other.toString(), point.toString());
+        Consumer<AbstractLabel> report = other -> System.out.printf("Label {%s} overlaps with label {%s}\r\n", other.toString(), point.toString());
         report = report.andThen(p -> counter.add(p));
-        Predicate<Point> doOverlap = other -> Test.doOverlap.test(point, other);
+        Predicate<AbstractLabel> doOverlap = other -> Test.doOverlap.test(point, other);
         points.stream()
-              .filter(Point::isValid)
+              .filter(AbstractLabel::isValid)
               .filter(notEquals)
               .filter(doOverlap)
               .forEach(report);
     }
 
-    private static Point get2pos(Scanner scanner)
+    private static AbstractLabel get2pos(Scanner scanner)
     {
         int x = scanner.nextInt();
         int y = scanner.nextInt();
         String label = scanner.next();
-        return new PosPoint(x, y, LabelPosition.fromString(label), false);
+        return new PosLabel(x, y, LabelPosition.fromString(label), false);
     }
 
-    private static Point get4pos(Scanner scanner)
+    private static AbstractLabel get4pos(Scanner scanner)
     {
         int x = scanner.nextInt();
         int y = scanner.nextInt();
         String label = scanner.next();
-        return new PosPoint(x, y, LabelPosition.fromString(label), true);
+        return new PosLabel(x, y, LabelPosition.fromString(label), true);
     }
 
-    private static Point getSliderPoint(Scanner scanner)
+    private static AbstractLabel getSliderPoint(Scanner scanner)
     {
         int x = scanner.nextInt();
         int y = scanner.nextInt();
@@ -120,7 +121,7 @@ public class Test
         {
             f = Optional.empty();
         }
-        return new SliderPoint(x, y, f);
+        return new SliderLabel(x, y, f);
     }
 
     private static class Tracker

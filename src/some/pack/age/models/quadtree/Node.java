@@ -1,6 +1,6 @@
-package some.pack.age.models;
+package some.pack.age.models.quadtree;
 
-import some.pack.age.models.NodeType;
+import some.pack.age.models.AxisAlignedBB;
 import some.pack.age.models.Point;
 
 public class Node {
@@ -145,7 +145,12 @@ public class Node {
     {
         return this.maxY;
     }
-    
+
+    public AxisAlignedBB getBoundingBox()
+    {
+        return new AxisAlignedBB(this.minX, this.minY, this.maxX, this.maxY);
+    }
+
     private void checkMinX()
     {
         int minX = this.minX = this.x;

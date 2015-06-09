@@ -2,6 +2,7 @@ package some.pack.age.test;
 
 import some.pack.age.models.AxisAlignedBB;
 import some.pack.age.models.Point;
+import some.pack.age.models.labels.AbstractLabel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -23,12 +24,12 @@ public class ImageGenerator
 
     private static final int POINT_SIZE = 20;
 
-    public static void generateImage(List<Point> points, int labelWidth, int labelHeight)
+    public static void generateImage(List<AbstractLabel> points, int labelWidth, int labelHeight)
     {
         generateImage(points, labelWidth, labelHeight, String.valueOf(System.currentTimeMillis()));
     }
 
-    public static void generateImage(List<Point> points, int labelWidth, int labelHeight, String outName)
+    public static void generateImage(List<AbstractLabel> points, int labelWidth, int labelHeight, String outName)
     {
         /*points.stream().filter(Point::isValid).forEach(point -> {
             AxisAlignedBB aabb = point.getAABB(labelWidth, labelHeight);

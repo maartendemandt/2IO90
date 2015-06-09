@@ -1,10 +1,18 @@
 package some.pack.age.models;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import some.pack.age.models.labels.AbstractLabel;
 import some.pack.age.quadtree.QuadTree;
 
-public class SolutionTest
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.*;
+
+public class QuadTreeTest
 {
 
     private static final int WIDTH = 10;
@@ -20,14 +28,15 @@ public class SolutionTest
     
     private void confirmNeighbours(int x, int y, int amount)
     {
-        confirmNeighbours(x, y, amount, Collections.emptyList());
+        confirmNeighbours(x, y, amount, Collections.<Point>emptyList());
     }
     
     private void confirmNeighbours(int x, int y, int amount, List<Point> points)
     {
-        Set<Point> intersections = this.tree.intersect(Point.construct(x, y)).size();
+        Set<Point> intersections = this.tree.intersect(Point.construct(x, y), WIDTH, HEIGHT);
         int actual = intersections.size();
-        Assert.equals(actual, amount, String.format("Invalid amount of intersections. Expected: %d, got: %d.", actual, amount));
+        assertEquals(String.format("Invalid amount of intersections. Expected: %d, got: %d.", actual, amount),
+                actual, amount);
         if (!points.isEmpty())
         {
             // Does this CME? It shouldn't, right?

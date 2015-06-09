@@ -1,4 +1,8 @@
-package some.pack.age.models;
+package some.pack.age.models.labels;
+
+import some.pack.age.models.AxisAlignedBB;
+import some.pack.age.models.Point;
+import some.pack.age.models.solution.Solution;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +10,7 @@ import java.util.Optional;
 /**
  * @author DarkSeraphim.
  */
-public abstract class AbstractLabel<T extends AbstractLabel> implements Point
+public abstract class AbstractLabel implements Point
 {
     protected final Point point;
 
@@ -37,15 +41,15 @@ public abstract class AbstractLabel<T extends AbstractLabel> implements Point
         return String.format("%d %d NIL", this.getX(), this.getY());
     }
 
-    public abstract Optional<Point> getRandomFreeLabel(Solution solution);
+    public abstract Optional<AbstractLabel> getRandomFreeLabel(Solution solution);
 
-    public abstract Optional<Point> getMutation(Solution solution);
+    public abstract Optional<AbstractLabel> getMutation(Solution solution);
 
     public abstract boolean isValid();
 
     public abstract AxisAlignedBB getAABB(int width, int height);
 
-    public abstract T getDefault();
+    public abstract AbstractLabel getDefault();
 
     @Override
     public final boolean equals(Object object)
@@ -58,7 +62,7 @@ public abstract class AbstractLabel<T extends AbstractLabel> implements Point
         return this.point.equals(other.point);
     }
 
-    public abstract boolean isClone(T point);
+    public abstract boolean isClone(AbstractLabel point);
 
     @Override
     public final int hashCode()
@@ -66,5 +70,5 @@ public abstract class AbstractLabel<T extends AbstractLabel> implements Point
         return this.point.hashCode();
     }
 
-    public abstract List<AbstractLabel<T>> getCandidates(Solution solution);
+    public abstract List<AbstractLabel> getCandidates(Solution solution);
 }

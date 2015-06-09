@@ -24,6 +24,11 @@ public class AxisAlignedBB
         assert this.y < this.v : "y must be smaller than v";
     }
 
+    public boolean contains(Point point)
+    {
+        return this.x <= point.getX() && point.getX() <= this.u;
+    }
+
     public boolean overlaps(AxisAlignedBB aabb)
     {
         return !(aabb.x >= this.u || aabb.u <= this.x || aabb.y >= this.v || aabb.v <= this.y);

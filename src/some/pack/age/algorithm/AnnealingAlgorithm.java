@@ -1,14 +1,11 @@
 package some.pack.age.algorithm;
 
-import java.util.ArrayList;
-import some.pack.age.models.Point;
-import some.pack.age.models.Solution;
-import some.pack.age.test.Scheduler;
+import some.pack.age.models.solution.Solution;
+import some.pack.age.models.solution.AnnealingSolution;
 
 import java.util.Optional;
 import java.util.Set;
-import some.pack.age.models.AbstractLabel;
-import some.pack.age.models.SolutionChange;
+import some.pack.age.models.labels.AbstractLabel;
 
 /**
  * @author G to the Foks and J to the Adegeest
@@ -27,7 +24,8 @@ public class AnnealingAlgorithm implements IAlgorithm
         double numberOfMinutes = 4.9; //JG
         //end
         
-        Solution solution = getRandomSolution(width, height, points);
+        AnnealingSolution solution = getRandomSolution(width, height, points);
+        solution.recomputeNeighbours();
         double temperature = getAppropiateTemperature(points);
         double initialTemperature = temperature;
         //double decreaseRate = getAppropiateDecreaseRate(temperature);
@@ -41,9 +39,8 @@ public class AnnealingAlgorithm implements IAlgorithm
         //Scheduler s = new Scheduler();
         //s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
         while (annualSchedule(temperature, minTemperature) && solutionQuality != points.size() ){
-            SolutionChange toChange = getNeighborSolutions(solution);
-            solution = toChange.execute(solution);
-            
+            proposeNeighborSolution(solution);
+
             maxQuality = Math.max(solution.getQuality(), maxQuality);
             double probability = getProbability(solution.getQuality(), solutionQuality, temperature);
 
@@ -55,11 +52,12 @@ public class AnnealingAlgorithm implements IAlgorithm
             if( checkIfAccepted(probability) ){
                 solutionQuality = solution.getQuality(); // NEIGHBOUR SOLUTION IMPROVEMENT
             } else {
-                solution = toChange.revert(solution);
+                solution.reset();
             }
 
-            if(solutionQuality > bestSolution.getQuality()){ // NEIGHBOUR SOLUTION IMPROVEMENT
-                bestSolution = solution;
+            if(solutionQuality > bestSolution.getQuality()) { // NEIGHBOUR SOLUTION IMPROVEMENT
+                // We need a copy >.<
+                bestSolution = new AnnealingSolution(solution);
             }
 
             //#ADDED
@@ -77,8 +75,8 @@ public class AnnealingAlgorithm implements IAlgorithm
 //TODO: uitzoeken wat een goed annealig schedule is. (temperature en decrease rate en waneer we stoppen)
 
     //generates a random solution
-    Solution getRandomSolution(int width, int height, Set<AbstractLabel> problem){
-        Solution solution = new Solution(width, height);
+    AnnealingSolution getRandomSolution(int width, int height, Set<AbstractLabel> problem){
+        AnnealingSolution solution = new AnnealingSolution(width, height);
 
         int i = 0;
         for(AbstractLabel label : problem) {
@@ -96,7 +94,7 @@ public class AnnealingAlgorithm implements IAlgorithm
         return solution;
     }
 
-    double getAppropiateTemperature(Set<Point> problem){
+    double getAppropiateTemperature(Set<AbstractLabel> problem){
         //Gekke calculations ask Gerson
         return 3.5;
 
@@ -118,18 +116,18 @@ public class AnnealingAlgorithm implements IAlgorithm
     }
 
 
-    SolutionChange getNeighborSolutions(Solution solution){
+    void proposeNeighborSolution(Solution solution){
         //get a random point that has an option to change the label position
         AbstractLabel label = solution.getRandomLabel(); //TODO alleen interessnten punten teruggeven
         //change the current label with a random other label that has no conflicts
-        Optional<Point> point = label.getMutation(solution);
+        Optional<AbstractLabel> point = label.getMutation(solution);
         if (point.isPresent())
         {
-            return new SolutionChange(label, point.get());
+            solution.change(label, point.get());
         }
         else
         {
-            return new SolutionChange(label);
+            solution.remove(label);
         }
     }
 

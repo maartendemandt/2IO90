@@ -4,7 +4,7 @@ import some.pack.age.algorithm.AnnealingAlgorithm;
 import some.pack.age.algorithm.IAlgorithm;
 import some.pack.age.algorithm.ThreePlusOneAlgorithm;
 import some.pack.age.models.Point;
-import some.pack.age.models.Solution;
+import some.pack.age.models.solution.Solution;
 import some.pack.age.test.ImageGenerator;
 
 import java.io.File;

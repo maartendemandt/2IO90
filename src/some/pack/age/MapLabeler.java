@@ -2,9 +2,9 @@ package some.pack.age;
 
 import some.pack.age.algorithm.IAlgorithm;
 import some.pack.age.models.Point;
-import some.pack.age.models.PosPoint;
-import some.pack.age.models.SliderPoint;
-import some.pack.age.models.Solution;
+import some.pack.age.models.labels.PosLabel;
+import some.pack.age.models.labels.SliderLabel;
+import some.pack.age.models.solution.Solution;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import some.pack.age.models.AbstractLabel;
+import some.pack.age.models.labels.AbstractLabel;
 import some.pack.age.util.ConvertedSet;
 
 /**
@@ -192,13 +192,13 @@ public class MapLabeler
         switch (this.model)
         {
             case TWO_POS:
-                point = PosPoint.create2posPoint(x, y);
+                point = PosLabel.create2PosLabel(x, y);
                 break;
             case FOUR_POS:
-                point = PosPoint.create4posPoint(x, y);
+                point = PosLabel.create4PosLabel(x, y);
                 break;
             case SLIDER:
-                point = new SliderPoint(x, y);
+                point = new SliderLabel(x, y);
                 break;
         }
         this.points.add(point);

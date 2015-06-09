@@ -1,6 +1,9 @@
-package some.pack.age.models;
+package some.pack.age.models.labels;
 
 import some.pack.age.LabelPosition;
+import some.pack.age.models.AxisAlignedBB;
+import some.pack.age.models.Point;
+import some.pack.age.models.solution.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author DarkSeraphim.
  */
-public class PosLabel extends AbstractLabel<PosLabel>
+public class PosLabel extends AbstractLabel
 {
 
     private final boolean four;
@@ -56,9 +59,9 @@ public class PosLabel extends AbstractLabel<PosLabel>
         return String.format("%d %d %s", this.getX(), this.getY(), this.pos.toString());
     }
 
-    private Optional<Point> getRandomExcept(Solution solution, LabelPosition exclude)
+    private Optional<AbstractLabel> getRandomExcept(Solution solution, LabelPosition exclude)
     {
-        Optional<Point> newPoint = Optional.empty();
+        Optional<AbstractLabel> newPoint = Optional.empty();
         if (this.four)
         {
             LabelPosition[] poss = new LabelPosition[]{LabelPosition.NORTH_EAST, LabelPosition.NORTH_WEST, LabelPosition.SOUTH_EAST, LabelPosition.SOUTH_WEST};
@@ -112,15 +115,15 @@ public class PosLabel extends AbstractLabel<PosLabel>
     }
 
     @Override
-    public Optional<Point> getRandomFreeLabel(Solution solution)
+    public Optional<AbstractLabel> getRandomFreeLabel(Solution solution)
     {
         return this.getRandomExcept(solution, null);
     }
 
     @Override
-    public Optional<Point> getMutation(Solution solution)
+    public Optional<AbstractLabel> getMutation(Solution solution)
     {
-        Optional<Point> mutation = this.getRandomExcept(solution, this.pos);
+        Optional<AbstractLabel> mutation = this.getRandomExcept(solution, this.pos);
         if (!mutation.isPresent())
         {
             if (this.isValid() && solution.isPossible(this))
@@ -157,17 +160,17 @@ public class PosLabel extends AbstractLabel<PosLabel>
         return new PosLabel(this, LabelPosition.NONE);
     }
 
-    public List<AbstractLabel<PosLabel>> getCandidates(Solution solution)
+    public List<AbstractLabel> getCandidates(Solution solution)
     {
         final PosLabel self = this;
         if (!this.four)
         {
-            return new ArrayList<AbstractLabel<PosLabel>>(){{
+            return new ArrayList<AbstractLabel>(){{
                 add(self);
                 add(new PosLabel(self, self.pos.getOtherTwoPos()));
             }};
         }
-        return new ArrayList<AbstractLabel<PosLabel>>() {{
+        return new ArrayList<AbstractLabel>() {{
             add(new PosLabel(self, LabelPosition.NORTH_EAST));
             add(new PosLabel(self, LabelPosition.NORTH_WEST));
             add(new PosLabel(self, LabelPosition.SOUTH_WEST));
@@ -176,9 +179,14 @@ public class PosLabel extends AbstractLabel<PosLabel>
     }
 
     @Override
-    public boolean isClone(PosLabel point)
+    public boolean isClone(AbstractLabel obj)
     {
-        return this.equals(point) && this.pos == point.pos;
+        if (!(obj instanceof PosLabel))
+        {
+            return false;
+        }
+        PosLabel other = (PosLabel) obj;
+        return this.equals(other) && this.pos == other.pos;
     }
 
     public boolean isValid()

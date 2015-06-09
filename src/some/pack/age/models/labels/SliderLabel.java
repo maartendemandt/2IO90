@@ -1,4 +1,7 @@
-package some.pack.age.models;
+package some.pack.age.models.labels;
+
+import some.pack.age.models.AxisAlignedBB;
+import some.pack.age.models.solution.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author DarkSeraphim.
  */
-public class SliderLabel extends AbstractLabel<SliderLabel>
+public class SliderLabel extends AbstractLabel
 {
 
     private static final int PRECISION = 100;
@@ -56,7 +59,7 @@ public class SliderLabel extends AbstractLabel<SliderLabel>
         this.slider = slider;
     }
 
-    private Optional<Point> getRandomExcept(Solution solution, Optional<Float> except)
+    private Optional<AbstractLabel> getRandomExcept(Solution solution, Optional<Float> except)
     {
         int start = ThreadLocalRandom.current().nextInt(PRECISION);
         for (int i = 0; i < PRECISION; i++)
@@ -81,13 +84,13 @@ public class SliderLabel extends AbstractLabel<SliderLabel>
     }
 
     @Override
-    public Optional<Point> getRandomFreeLabel(Solution solution)
+    public Optional<AbstractLabel> getRandomFreeLabel(Solution solution)
     {
         return getRandomExcept(solution, Optional.empty());
     }
 
     @Override
-    public Optional<Point> getMutation(Solution solution)
+    public Optional<AbstractLabel> getMutation(Solution solution)
     {
         return getRandomExcept(solution, Optional.empty());
     }
@@ -108,17 +111,22 @@ public class SliderLabel extends AbstractLabel<SliderLabel>
     }
 
     @Override
-    public boolean isClone(SliderLabel point)
+    public boolean isClone(AbstractLabel obj)
     {
-        return this.equals(point) && this.slider.isPresent() == point.slider.isPresent() && sameSlider(this.slider.get(), point.slider.get());
+        if (!(obj instanceof AbstractLabel))
+        {
+            return false;
+        }
+        SliderLabel other = (SliderLabel) obj;
+        return this.equals(other) && this.slider.isPresent() == other.slider.isPresent() && sameSlider(this.slider.get(), other.slider.get());
     }
 
     @Override
-    public List<AbstractLabel<SliderLabel>> getCandidates(Solution solution)
+    public List<AbstractLabel> getCandidates(Solution solution)
     {
         final int x = this.getX();
         final int y = this.getY();
-        return new ArrayList<AbstractLabel<SliderLabel>>() {{
+        return new ArrayList<AbstractLabel>() {{
             for (int i = 0; i < PRECISION; i++)
             {
                 float slider = ((float)i / PRECISION);

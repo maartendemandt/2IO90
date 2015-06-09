@@ -1,6 +1,7 @@
 package some.pack.age.quadtree;
 
-import some.pack.age.models.Node;
+import some.pack.age.models.AxisAlignedBB;
+import some.pack.age.models.quadtree.Node;
 import some.pack.age.models.Point;
 
 import java.util.HashSet;
@@ -82,51 +83,31 @@ public class QuadTree {
                 return super.add(point1);
             }
         };
-        return intersectQuadrant(point, root, xMax, xMin, yMax, yMin, reporter);
-    }
-    
-    public Set<Point> intersectQuadrant(Point point, Node node, int xMax, int xMin, int yMax, int yMin, Set<Point> reporter){
-        if(node.getX() <= xMax && node.getX() >= xMin && node.getY() <= yMax && node.getY() >= yMin){
-            //Point inside the region, report it
-            reporter.add(node.getPoint());
-            /* if(node.hasNe()){
-                intersectQuadrant(point, node.getNe(), xMax, xMin, yMax, yMin);
-            }
-            if(node.hasNw()){
-                intersectQuadrant(point, node.getNw(), xMax, xMin, yMax, yMin);
-            }
-            if(node.hasSw()){
-                intersectQuadrant(point, node.getSe(), xMax, xMin, yMax, yMin);
-            }
-            if(node.hasSe()){
-                intersectQuadrant(point, node.getSw(), xMax, xMin, yMax, yMin);
-            } */
-        }
-        
-        // Use AABB check?
-        // What if the region overlaps multiple quadrants? (AABB check again?)
-        
-        if(point.getX() <= node.getX()  && node.getY() > point.getY()){
-            if(node.hasNw()){
-                intersectQuadrant(point, node.getNw(), xMax, xMin, yMax, yMin, reporter);
-            }
-        }
-        else if(point.getX() > node.getX() && point.getY() >= node.getY()){
-            if(node.hasNe()){
-                intersectQuadrant(point, node.getNe(), xMax, xMin, yMax, yMin, reporter);
-            }
-        }
-        else if(point.getX() >= node.getX() && point.getY() < node.getY()){
-            if(node.hasSe()){
-                intersectQuadrant(point, node.getSe(), xMax, xMin, yMax, yMin, reporter);
-            }
-        }
-        else if(point.getX() < node.getX() && point.getY() <= node.getY()){
-            if(node.hasSw()){
-                intersectQuadrant(point, node.getSw(), xMax, xMin, yMax, yMin, reporter);
-            }
+        if (this.root != null)
+        {
+            intersectQuadrant(point, root, new AxisAlignedBB(xMin, yMin, xMax, yMax), reporter);
         }
         return reporter;
     }
     
+    public Set<Point> intersectQuadrant(Point point, Node node, AxisAlignedBB aabb, Set<Point> reporter){
+        if(aabb.contains(node.getPoint())) {
+            //Point inside the region, report it
+            reporter.add(node.getPoint());
+        }
+        
+        if(node.hasNw() && node.getNw().getBoundingBox().overlaps(aabb)){
+            intersectQuadrant(point, node.getNw(), aabb, reporter);
+        }
+        if(node.hasNe() && node.getNe().getBoundingBox().overlaps(aabb)){
+            intersectQuadrant(point, node.getNe(), aabb, reporter);
+        }
+        if(node.hasSe() && node.getSe().getBoundingBox().overlaps(aabb)){
+            intersectQuadrant(point, node.getSe(), aabb, reporter);
+        }
+        if(node.hasSw() && node.getSw().getBoundingBox().overlaps(aabb)){
+            intersectQuadrant(point, node.getSw(), aabb, reporter);
+        }
+        return reporter;
+    }
 }

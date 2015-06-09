@@ -10,3 +10,4 @@
 sample-*.txt
 sample-*.png
 /nbproject/
+/build-test/

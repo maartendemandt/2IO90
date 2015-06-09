@@ -1,37 +1,35 @@
-package some.pack.age.models;
+package some.pack.age.models.solution;
 
+import some.pack.age.models.AxisAlignedBB;
+import some.pack.age.models.Point;
+import some.pack.age.models.labels.AbstractLabel;
 import some.pack.age.quadtree.QuadTree;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import some.pack.age.util.ConvertedSet;
 
 /**
  * @author DarkSeraphim.
  */
-public class Solution implements Iterable<AbstractLabel<?>>
+public class Solution implements Iterable<AbstractLabel>
 {
 
     protected final int width;
 
     protected final int height;
 
-    protected final Set<AbstractLabel<?>> labels;
+    protected final Set<AbstractLabel> labels;
 
     protected final Map<Point, List<Point>> collisions = new HashMap<>();
-    
-    private Map<Point, Set<AbstractLabel<?>>> neighbours;
+
+    private QuadTree quadTree;
+
+    private Map<Point, Set<AbstractLabel>> neighbours;
 
     public Solution(int width, int height)
     {
-        this(width, height, new LinkedHashSet<AbstractLabel<?>>());
+        this(width, height, new LinkedHashSet<AbstractLabel>());
     }
 
     public Solution(Solution other)
@@ -39,14 +37,15 @@ public class Solution implements Iterable<AbstractLabel<?>>
         this(other.width, other.height, other.labels);
     }
 
-    public Solution(int width, int height, Set<AbstractLabel<?>> points)
+    public Solution(int width, int height, Set<AbstractLabel> points)
     {
         this.width = width;
         this.height = height;
-        this.labels = new HashSet<>(points);
-        QuadTree quadTree = new QuadTree();
-        for (Point point : points) {
-            quadTree.insert(point);
+        this.labels = new LinkedHashSet<>(points);
+        this.quadTree = new QuadTree();
+        for (Point point : points)
+        {
+           this.quadTree.insert(point);
         }
         this.neighbours = new HashMap<>();
         for (Point point : points)
@@ -61,14 +60,17 @@ public class Solution implements Iterable<AbstractLabel<?>>
     }
 
     @Override
-    public Iterator<AbstractLabel<?>> iterator()
+    public Iterator<AbstractLabel> iterator()
     {
         return this.labels.iterator();
     }
 
     public void add(AbstractLabel point)
     {
-        this.labels.add(point);
+        if (this.labels.add(point))
+        {
+            this.quadTree.insert(point);
+        }
     }
 
     public void change(AbstractLabel p, AbstractLabel mutation)
@@ -119,21 +121,38 @@ public class Solution implements Iterable<AbstractLabel<?>>
 
     public int size()
     {
-        return (int) this.labels.stream().filter(Point::isValid).count();
+        return (int) this.labels.stream().filter(AbstractLabel::isValid).count();
     }
 
-    public Set<AbstractLabel<?>> getPoints()
+    public Set<AbstractLabel> getPoints()
     {
         return this.labels;
     }
 
-    public Set<AbstractLabel<?>> getNeighbours(Point point)
+    public Set<AbstractLabel> getNeighbours(Point point)
     {
-        return this.neighbours.get(point);
+        Set<AbstractLabel> points = this.neighbours.get(point);
+        if (points != null)
+        {
+            return points;
+        }
+        return new ConvertedSet<>(this.quadTree.intersect(point, this.width, this.height), AbstractLabel.class);
     }
 
-    public List<AbstractLabel<?>> getConflicts(Point candidate)
+    public List<AbstractLabel> getConflicts(Point candidate)
     {
         return null;
+    }
+
+    public void recomputeNeighbours()
+    {
+        this.quadTree = new QuadTree();
+        this.labels.forEach(this.quadTree::insert);
+        this.labels.forEach(this::setNeighbours);
+    }
+
+    private void setNeighbours(Point point)
+    {
+        this.neighbours.put(point, new ConvertedSet<>(this.quadTree.intersect(point, this.width, this.height), AbstractLabel.class));
     }
 }

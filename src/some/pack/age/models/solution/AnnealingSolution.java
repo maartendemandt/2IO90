@@ -1,4 +1,7 @@
-package some.pack.age.models;
+package some.pack.age.models.solution;
+
+import some.pack.age.models.labels.AbstractLabel;
+import some.pack.age.models.labels.LabelState;
 
 import java.util.*;
 
@@ -22,19 +25,32 @@ public class AnnealingSolution extends Solution
         super(other);
     }
 
-    public AnnealingSolution(int width, int height, Set<AbstractLabel<?>> points) {
+    public AnnealingSolution(int width, int height, Set<AbstractLabel> points) {
         super(width, height, points);
     }
     
     public void change(AbstractLabel current, AbstractLabel next)
     {
         this.oldQuality = this.getQuality();
-        this.lastChange.set();
+        this.lastChange.set(LabelState.prepare(current, next));
+        this.keep();
+    }
+
+    public void remove(AbstractLabel current)
+    {
+        this.oldQuality = this.getQuality();
+        this.lastChange.set(LabelState.prepareRemove(current));
+        this.keep();
+    }
+
+    public double getOldQuality()
+    {
+        return this.oldQuality;
     }
     
     public void reset()
     {
-        this.lastChange.reset();
+        this.lastChange.undo();
     }
     
     public void keep()
