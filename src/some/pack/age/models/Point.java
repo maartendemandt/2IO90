@@ -57,6 +57,12 @@ public interface Point
             result = 37 * result + y;
             return result;
         }
+        
+        @Override
+        public String toString()
+        {
+            return String.format("[%d,%d]", this.x, this.y);
+        }
     }
     
     public int getX();

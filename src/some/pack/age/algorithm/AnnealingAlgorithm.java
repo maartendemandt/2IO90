@@ -6,6 +6,7 @@ import some.pack.age.models.solution.AnnealingSolution;
 import java.util.Optional;
 import java.util.Set;
 import some.pack.age.models.labels.AbstractLabel;
+import some.pack.age.test.Scheduler;
 
 /**
  * @author G to the Foks and J to the Adegeest
@@ -36,8 +37,8 @@ public class AnnealingAlgorithm implements IAlgorithm
         double maxQuality = solution.getQuality();
         solutionQuality = maxQuality; // NEIGHBOUR SOLUTION IMPROVEMENT
         System.out.println("Quality at start: " + maxQuality);
-        //Scheduler s = new Scheduler();
-        //s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
+        Scheduler s = new Scheduler();
+        s.setMaxTemperature(initialTemperature, minTemperature);
         while (annualSchedule(temperature, minTemperature) && solutionQuality != points.size() ){
             proposeNeighborSolution(solution);
 
@@ -62,8 +63,7 @@ public class AnnealingAlgorithm implements IAlgorithm
 
             //#ADDED
             temperature = calculateTemperature(initialTemperature, startTime, numberOfMinutes);
-            
-            //s.bumpPhase();
+            s.setTemperature(temperature);
         }
         //s.kill();
         System.out.println("Max quality: "+maxQuality);

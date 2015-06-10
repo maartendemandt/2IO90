@@ -199,8 +199,9 @@ public class Node {
         if (this.hasNw())
         {
             maxY = Math.max(this.getNw().getMaxY(), maxY);
+            
         }
-        else if (this.hasSe())
+        else if (this.hasNe())
         {
             maxY = Math.max(this.getNe().getMaxY(), maxY);
         }

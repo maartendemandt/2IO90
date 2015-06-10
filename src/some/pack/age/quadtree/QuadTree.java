@@ -12,56 +12,61 @@ public class QuadTree {
     private Node root;
     private int insertedPoints = 0;
     
-    public void insert(Point point) {     
+    public Node insert(Point point) {     
         if(this.root == null){
-            root = new Node(point.getX(), point.getY(), point, null);
             this.insertedPoints++;
+            return root = new Node(point.getX(), point.getY(), point, null);
         }
         else {
-            getInsertLeaf(point, root);
+            return getInsertLeaf(point, root);
         }
     }
     
     public Node getQuadrant(Point point, Node node){
         Node returnNode = null;
-        if(node.getX() <= point.getX() && node.getY() > point.getY()){
+        if(point.getX() <= node.getX() && point.getY() > node.getY()){
             returnNode = node.getNw();
         }
-        else if(node.getX() > point.getX() && node.getY() >= point.getY()){
+        else if(point.getX() > node.getX() && point.getY() >= node.getY()){
             returnNode = node.getNe();
         }
-        else if(node.getX() >= point.getX() && node.getY() < point.getY()){
+        else if(point.getX() >= node.getX() && point.getY() < node.getY()){
             returnNode = node.getSe();
         }
-        else if(node.getX() < point.getX() && node.getY() <= point.getY()){
+        else if(point.getX() < node.getX() && point.getY() <= node.getY()){
             returnNode = node.getSw();
         }
         return returnNode;
     }
     
-    public void setQuadrant(Point point, Node node){
-        if(node.getX() <= point.getX() && node.getY() > point.getY()){
-            node.setNw(new Node(point.getX(), point.getY(), point, node));
+    public Node setQuadrant(Point point, Node node){
+        Node child = new Node(point.getX(), point.getY(), point, node);
+        if(point.getX() <= node.getX() && point.getY() > node.getY()){
+            node.setNw(child);
         }
-        else if(node.getX() > point.getX() && node.getY() >= point.getY()){
-            node.setNe(new Node(point.getX(), point.getY(), point, node));
+        else if(point.getX() > node.getX() && point.getY() >= node.getY()){
+            node.setNe(child);
         }
-        else if(node.getX() >= point.getX() && node.getY() < point.getY()){
-            node.setSe(new Node(point.getX(), point.getY(), point, node));
+        else if(point.getX() >= node.getX() && point.getY() < node.getY()){
+            node.setSe(child);
         }
-        else if(node.getX() < point.getX() && node.getY() <= point.getY()){
-            node.setSw(new Node(point.getX(), point.getY(), point, node));
+        else if(point.getX() < node.getX() && point.getY() <= node.getY()){
+            node.setSw(child);
         }
+        else {
+            child = null;
+        }
+        return child;
     }
     
-    public void getInsertLeaf(Point point, Node node){
+    public Node getInsertLeaf(Point point, Node node){
         Node quadrant = getQuadrant(point, node);
         if(quadrant != null){
-            getInsertLeaf(point,quadrant);
+            return getInsertLeaf(point, quadrant);
         }
         else{
-           setQuadrant(point, node);
-           insertedPoints++;
+            insertedPoints++;
+            return setQuadrant(point, node);
         }
     }
     

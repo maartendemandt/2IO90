@@ -1,4 +1,4 @@
-package some.pack.age.models;
+package some.pack.age;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,8 +9,10 @@ import some.pack.age.quadtree.QuadTree;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import some.pack.age.models.Point;
 
 import static org.junit.Assert.*;
+import some.pack.age.models.quadtree.Node;
 
 public class QuadTreeTest
 {
@@ -21,9 +23,9 @@ public class QuadTreeTest
 
     private QuadTree tree;
 
-    private void addPoint(int x, int y)
+    private Node addPoint(int x, int y)
     {
-        tree.insert(Point.construct(x, y));
+        return tree.insert(Point.construct(x, y));
     }
     
     private void confirmNeighbours(int x, int y, int amount)
@@ -59,7 +61,7 @@ public class QuadTreeTest
     @Test
     public void testNoNeighbours()
     {
-        addPoint(0,0);
+        addPoint(0, 0);
         addPoint(21, 21);
         addPoint(-21, 21);
         addPoint(-21, -21);
@@ -68,5 +70,28 @@ public class QuadTreeTest
     }
     
     // Add more tests!
+    @Test
+    public void testSingleNeighbour()
+    {
+        addPoint(0, 0);
+        addPoint(1, 1);
+        confirmNeighbours(0, 0, 1);
+    }
+    
+    @Test
+    public void testSingleNeighbourOnEdge()
+    {
+        Node root = addPoint(0, 0);
+        Node node = addPoint(WIDTH * 2, HEIGHT * 2);
+        confirmNeighbours(0, 0, 1);
+    }
+    
+    @Test
+    public void testSingleNeighbourJustOverEdge()
+    {
+        addPoint(0, 0);
+        addPoint(WIDTH * 2 + 1, HEIGHT * 2 + 1);
+        confirmNeighbours(0, 0, 0);
+    }
 
 }

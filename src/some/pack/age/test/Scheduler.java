@@ -10,6 +10,8 @@ public class Scheduler extends JFrame
 {
 
     private final JProgressBar progress;
+    
+    private double min;
 
     public Scheduler()
     {
@@ -25,15 +27,17 @@ public class Scheduler extends JFrame
         super.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    public void setMaxPhases(int phases)
+    public void setMaxTemperature(double temp, double min)
     {
-        this.progress.setMaximum(phases);
+        this.min = min;
+        this.progress.setMaximum((int) (temp - min));
     }
 
-    public void bumpPhase()
+    public void setTemperature(double temp)
     {
-        this.progress.setValue(this.progress.getValue() + 1);
-        this.progress.setString(String.format("%d / %d phases passed", this.progress.getValue(), this.progress.getMaximum()));
+        int t = (int) (temp - min);
+        this.progress.setValue(this.progress.getMaximum() - t);
+        this.progress.setString(String.format("Current Temperature: %f. Min Temperature: %f", temp, this.min));
     }
 
     public void kill()
