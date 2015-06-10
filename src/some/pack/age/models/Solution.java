@@ -15,13 +15,13 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Solution implements Iterable<Point>
 {
 
-    protected final int width;
+    private final int width;
 
-    protected final int height;
+    private final int height;
 
-    protected final Set<Point> points;
+    private final Set<Point> points;
 
-    protected final Map<Point, List<Point>> collisions = new HashMap<>();
+    private final Map<Point, List<Point>> collisions = new HashMap<>();
 
     public Solution(int width, int height)
     {
@@ -117,7 +117,7 @@ public class Solution implements Iterable<Point>
         return null;
     }
 
-    public List<Point<?>> getConflicts(Point candidate)
+    public List<Point> getConflicts(Point candidate)
     {
         return null;
     }
