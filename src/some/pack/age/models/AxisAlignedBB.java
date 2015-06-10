@@ -1,5 +1,7 @@
 package some.pack.age.models;
 
+import some.pack.age.quadtree.QuadTree;
+
 /**
  * @author DarkSeraphim.
  */
@@ -26,7 +28,8 @@ public class AxisAlignedBB
 
     public boolean contains(Point point)
     {
-        return this.x <= point.getX() && point.getX() <= this.u;
+        return this.x <= point.getX() && point.getX() <= this.u
+            && this.y <= point.getY() && point.getY() <= this.v;
     }
 
     public boolean overlaps(AxisAlignedBB aabb)

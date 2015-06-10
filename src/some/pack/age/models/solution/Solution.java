@@ -25,7 +25,7 @@ public class Solution implements Iterable<AbstractLabel>
 
     private QuadTree quadTree;
 
-    private Map<Point, Set<AbstractLabel>> neighbours;
+    protected Map<Point, Set<AbstractLabel>> neighbours;
 
     public Solution(int width, int height)
     {
@@ -153,6 +153,7 @@ public class Solution implements Iterable<AbstractLabel>
 
     private void setNeighbours(Point point)
     {
-        this.neighbours.put(point, new ConvertedSet<>(this.quadTree.intersect(point, this.width, this.height), AbstractLabel.class));
+        Set<AbstractLabel> set = new ConvertedSet<>(this.quadTree.intersect(point, this.width, this.height), AbstractLabel.class);
+        this.neighbours.put(point, set);
     }
 }

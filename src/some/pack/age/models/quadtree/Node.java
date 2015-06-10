@@ -2,6 +2,7 @@ package some.pack.age.models.quadtree;
 
 import some.pack.age.models.AxisAlignedBB;
 import some.pack.age.models.Point;
+import some.pack.age.quadtree.QuadTree;
 
 public class Node {
 
@@ -153,58 +154,109 @@ public class Node {
 
     private void checkMinX()
     {
+        int old = this.minX;
         int minX = this.minX = this.x;
+        if (this.hasSw())
+        {
+            minX = Math.min(this.getSw().getMinX(), minX);
+        }
         if (this.hasNw())
         {
             minX = Math.min(this.getNw().getMinX(), minX);
         }
-        else if (this.hasSw())
+        if (this.hasNe())
         {
-            minX = Math.min(this.getSw().getMinX(), minX);
+            minX = Math.min(this.getNe().getMinX(), minX);
+        }
+        if (this.hasSe())
+        {
+            minX = Math.min(this.getSe().getMinX(), minX);
         }
         this.minX = Math.min(this.minX, minX);
+        if (this.opt_parent != null)
+        {
+            this.opt_parent.checkMinX();
+        }
     }
     
     private void checkMinY()
     {
+        int old = this.minY;
         int minY = this.minY = this.y;
         if (this.hasSw())
         {
             minY = Math.min(this.getSw().getMinY(), minY);
         }
-        else if (this.hasSe())
+        if (this.hasNw())
+        {
+            minY = Math.min(this.getNw().getMinY(), minY);
+        }
+        if (this.hasNe())
+        {
+            minY = Math.min(this.getNe().getMinY(), minY);
+        }
+        if (this.hasSe())
         {
             minY = Math.min(this.getSe().getMinY(), minY);
         }
         this.minY = Math.min(this.minY, minY);
+        if (this.opt_parent != null)
+        {
+            this.opt_parent.checkMinY();
+        }
     }
     
     private void checkMaxX()
     {
+        int old = this.maxX;
         int maxX = this.maxX = this.x;
+        if (this.hasSw())
+        {
+            maxX = Math.max(this.getSw().getMaxX(), maxX);
+        }
+        if (this.hasNw())
+        {
+            maxX = Math.max(this.getNw().getMaxX(), maxX);
+        }
         if (this.hasNe())
         {
             maxX = Math.max(this.getNe().getMaxX(), maxX);
         }
-        else if (this.hasSe())
+        if (this.hasSe())
         {
             maxX = Math.max(this.getSe().getMaxX(), maxX);
         }
         this.maxX = Math.max(this.maxX, maxX);
+        if (this.opt_parent != null)
+        {
+            this.opt_parent.checkMaxX();
+        }
     }
     
     private void checkMaxY()
     {
+        int old = this.maxY;
         int maxY = this.maxY = this.y;
+        if (this.hasSw())
+        {
+            maxY = Math.max(this.getSw().getMaxY(), maxY);
+        }
         if (this.hasNw())
         {
             maxY = Math.max(this.getNw().getMaxY(), maxY);
-            
         }
-        else if (this.hasNe())
+        if (this.hasNe())
         {
             maxY = Math.max(this.getNe().getMaxY(), maxY);
         }
+        if (this.hasSe())
+        {
+            maxY = Math.max(this.getSe().getMaxY(), maxY);
+        }
         this.maxY = Math.max(this.maxY, maxY);
+        if (this.opt_parent != null)
+        {
+            this.opt_parent.checkMaxY();
+        }
     }
 }

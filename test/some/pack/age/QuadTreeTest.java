@@ -6,9 +6,11 @@ import org.junit.Test;
 import some.pack.age.models.labels.AbstractLabel;
 import some.pack.age.quadtree.QuadTree;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
 import some.pack.age.models.Point;
 
 import static org.junit.Assert.*;
@@ -37,7 +39,7 @@ public class QuadTreeTest
     {
         Set<Point> intersections = this.tree.intersect(Point.construct(x, y), WIDTH, HEIGHT);
         int actual = intersections.size();
-        assertEquals(String.format("Invalid amount of intersections. Expected: %d, got: %d.", actual, amount),
+        assertEquals(String.format("Invalid amount of intersections. Expected: %d, got: %d.", amount, actual),
                 actual, amount);
         if (!points.isEmpty())
         {
@@ -77,7 +79,30 @@ public class QuadTreeTest
         addPoint(1, 1);
         confirmNeighbours(0, 0, 1);
     }
-    
+
+    @Test
+    public void testQuadrantNeighbours()
+    {
+        addPoint(0, 0);
+        addPoint(WIDTH, HEIGHT);
+        addPoint(WIDTH, -HEIGHT);
+        addPoint(-WIDTH, HEIGHT);
+        addPoint(-WIDTH, -HEIGHT);
+        confirmNeighbours(0, 0, 4);
+    }
+
+    @Test
+    public void testTwoOutOfFourNeighbours()
+    {
+        addPoint(0, 0);
+        addPoint(WIDTH, HEIGHT);
+        addPoint(WIDTH, -HEIGHT);
+        addPoint(-WIDTH, HEIGHT * 2 + 1);
+        addPoint(-WIDTH, -HEIGHT * 2 - 1);
+        confirmNeighbours(0, 0, 2);
+    }
+
+
     @Test
     public void testSingleNeighbourOnEdge()
     {
@@ -94,4 +119,29 @@ public class QuadTreeTest
         confirmNeighbours(0, 0, 0);
     }
 
+    @Test
+    public void testMultiDepthRandom20()
+    {
+        List<Point> points = new ArrayList<Point>(){{
+            add(Point.construct(0, 0));
+            for (int i = 1; i <= 5; i++)
+            {
+                add(Point.construct(i, i));
+                add(Point.construct(-i, i));
+                add(Point.construct(i, -i));
+                add(Point.construct(-i, -i));
+            }
+        }};
+
+        for (int i = 0; i < 20; i++)
+        {
+            this.tree = new QuadTree();
+            Collections.shuffle(points);
+            for (Point point : points)
+            {
+                addPoint(point.getX(), point.getY());
+            }
+            confirmNeighbours(0, 0, 20);
+        }
+    }
 }

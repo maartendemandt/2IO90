@@ -100,7 +100,7 @@ public class QuadTree {
             //Point inside the region, report it
             reporter.add(node.getPoint());
         }
-        
+
         if(node.hasNw() && node.getNw().getBoundingBox().overlaps(aabb)){
             intersectQuadrant(point, node.getNw(), aabb, reporter);
         }

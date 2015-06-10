@@ -37,8 +37,8 @@ public class AnnealingAlgorithm implements IAlgorithm
         double maxQuality = solution.getQuality();
         solutionQuality = maxQuality; // NEIGHBOUR SOLUTION IMPROVEMENT
         System.out.println("Quality at start: " + maxQuality);
-        Scheduler s = new Scheduler();
-        s.setMaxTemperature(initialTemperature, minTemperature);
+        //Scheduler s = new Scheduler();
+        //s.setMaxTemperature(initialTemperature, minTemperature);
         while (annualSchedule(temperature, minTemperature) && solutionQuality != points.size() ){
             proposeNeighborSolution(solution);
 
@@ -63,7 +63,7 @@ public class AnnealingAlgorithm implements IAlgorithm
 
             //#ADDED
             temperature = calculateTemperature(initialTemperature, startTime, numberOfMinutes);
-            s.setTemperature(temperature);
+           //s.setTemperature(temperature);
         }
         //s.kill();
         System.out.println("Max quality: "+maxQuality);
