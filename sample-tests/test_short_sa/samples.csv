@@ -1,0 +1,5 @@
+Placement model;Width;Height;Number of points;Distribution;Algorithm;Labels placed;Quality;Running time(ns)
+2pos;300;200;100;random;sa;;;
+4pos;300;200;10000;clustered;sa;;;
+1slider;300;200;1500;easiest;sa;;;
+4pos;300;200;4000;hardest;sa;;;
