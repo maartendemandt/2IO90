@@ -2,7 +2,7 @@ package some.pack.age;
 
 import some.pack.age.algorithm.AnnealingAlgorithm;
 import some.pack.age.algorithm.IAlgorithm;
-import some.pack.age.algorithm.ThreePlusOneAlgorithm;
+import some.pack.age.algorithm.EIL3Algorithm;
 import some.pack.age.models.Point;
 import some.pack.age.models.solution.Solution;
 import some.pack.age.test.ImageGenerator;
@@ -44,7 +44,7 @@ public class Main
         parseArguments(args);
         long start = System.nanoTime();
         MapLabeler.registerPlacementAlgorithm("2pos", new AnnealingAlgorithm());
-        MapLabeler.registerPlacementAlgorithm("4pos", new AnnealingAlgorithm());
+        MapLabeler.registerPlacementAlgorithm("4pos", new EIL3Algorithm());
         MapLabeler.registerPlacementAlgorithm("1slider", new AnnealingAlgorithm());
         Scanner input = new Scanner(FILE != null ? new FileInputStream(FILE) : System.in);
         MapLabeler.Builder builder = MapLabeler.builder();
@@ -96,7 +96,7 @@ public class Main
         if (USE_ME_SENPAI.isPresent()){
             if (USE_ME_SENPAI.get() instanceof AnnealingAlgorithm){
                 System.out.println("Algorithm used: sa"); 
-            } else if (USE_ME_SENPAI.get() instanceof ThreePlusOneAlgorithm){
+            } else if (USE_ME_SENPAI.get() instanceof EIL3Algorithm){
                 System.out.println("Algorithm used: eil3");
             }
         }
@@ -205,7 +205,7 @@ public class Main
                         case "eil3":
                         case "l3":
                         case "et":
-                            USE_ME_SENPAI = Optional.of(new ThreePlusOneAlgorithm());
+                            USE_ME_SENPAI = Optional.of(new EIL3Algorithm());
                             break;
                         case "annealing":
                         case "simulatedannealing":
