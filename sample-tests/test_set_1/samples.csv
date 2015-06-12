@@ -1,5 +1,15 @@
-Placement model;Width;Height;Number of points;Distribution;Algorithm;Quality;Running time(ns)
-2pos;300;200;100;random;;;
-2pos;300;200;100;random;sa;0.99;547550699
-2pos;300;200;200;random;sa;0.945;725933359
-2pos;300;200;300;clustered;sa;0.7233333333333334;902172227
+Placement model;Width;Height;Number of points;Distribution;Algorithm;Labels placed;Quality;Running time(ns)
+1slider;600;400;10;clustered;sa;10;1.0;68305708
+1slider;600;400;10;random;;;;
+1slider;600;400;100;clustered;;;;
+1slider;600;400;100;random;sa;84;0.84;294383871573
+1slider;600;400;25;clustered;;;;
+1slider;600;400;25;random;;;;
+2pos;600;400;10;clustered;sa;10;1.0;55140692
+2pos;600;400;10;random;sa;10;1.0;63004566
+2pos;600;400;25;clustered;sa;23;0.92;294323314732
+2pos;600;400;25;random;sa;25;1.0;62757952
+4pos;600;400;10;clustered;sa;10;1.0;60228726
+4pos;600;400;10;random;sa;10;1.0;60353693
+4pos;600;400;25;clustered;sa;25;1.0;70542439
+4pos;600;400;25;random;sa;25;1.0;61216390
