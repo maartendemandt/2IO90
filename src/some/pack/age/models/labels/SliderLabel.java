@@ -154,4 +154,9 @@ public class SliderLabel extends AbstractLabel
         }
         return String.format("%d %d NIL", this.getX(), this.getY());
     }
+
+    public AbstractLabel copy()
+    {
+        return new SliderLabel(this);
+    }
 }

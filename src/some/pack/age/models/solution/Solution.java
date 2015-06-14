@@ -41,7 +41,11 @@ public class Solution implements Iterable<AbstractLabel>
     {
         this.width = width;
         this.height = height;
-        this.labels = new LinkedHashSet<>(points);
+        if (!(points instanceof LinkedHashSet))
+        {
+            throw new IllegalStateException("You wot m8");
+        }
+        this.labels = points;
         this.quadTree = new QuadTree();
         for (Point point : points)
         {

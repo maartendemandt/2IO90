@@ -1,11 +1,14 @@
 package some.pack.age.models.solution;
 
+import some.pack.age.LabelPosition;
 import some.pack.age.models.Point;
 import some.pack.age.models.labels.AbstractLabel;
 import some.pack.age.models.labels.LabelState;
+import some.pack.age.models.labels.PosLabel;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 /**
  * @author DarkSeraphim.
@@ -82,5 +85,14 @@ public class AnnealingSolution extends Solution
             return super.getRandomLabel();
         }
         return this.interesting.get(ThreadLocalRandom.current().nextInt(this.interesting.size()));
+    }
+
+    public AnnealingSolution copy()
+    {
+        Set<AbstractLabel> clone = new LinkedHashSet<>();
+        this.getPoints().stream()
+                        .map(AbstractLabel::copy)
+                        .forEach(clone::add);
+        return new AnnealingSolution(this.width, this.height, clone);
     }
 }

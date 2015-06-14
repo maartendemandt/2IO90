@@ -71,4 +71,6 @@ public abstract class AbstractLabel implements Point
     }
 
     public abstract List<AbstractLabel> getCandidates(Solution solution);
+
+    public abstract AbstractLabel copy();
 }
