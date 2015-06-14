@@ -41,7 +41,11 @@ public class Solution implements Iterable<AbstractLabel>
     {
         this.width = width;
         this.height = height;
-        this.labels = new LinkedHashSet<>(points);
+        if (!(points instanceof LinkedHashSet))
+        {
+            throw new IllegalStateException("You wot m8");
+        }
+        this.labels = points;
         this.quadTree = new QuadTree();
         for (Point point : points)
         {
@@ -85,15 +89,19 @@ public class Solution implements Iterable<AbstractLabel>
         this.labels.add(p.getDefault());
     }
 
-    private List<Long> times = new ArrayList<>();
+    private int checks;
+
+    private long average;
 
     public void printAverage()
     {
-        System.out.println(times.stream().mapToDouble(l -> l).average().getAsDouble());
+        System.out.println(average);
     }
 
     public boolean isPossible(AbstractLabel point)
     {
+        this.checks++;
+        double checks = this.checks;
         long start = System.nanoTime();
         AxisAlignedBB box = point.getAABB(this.width, this.height);
         for (AbstractLabel other : this.getNeighbours(point))
@@ -105,11 +113,11 @@ public class Solution implements Iterable<AbstractLabel>
             AxisAlignedBB otherBox = other.getAABB(this.width, this.height);
             if (box.overlaps(otherBox))
             {
-                times.add(System.nanoTime() - start);
+                this.average = (long) ((checks - 1 / checks) * average + (1 / checks) * (System.nanoTime() - start));
                 return false;
             }
         }
-        times.add(System.nanoTime() - start);
+        this.average = (long) ((checks - 1 / checks) * average + (1 / checks) * (System.nanoTime() - start));
         return true;
     }
 

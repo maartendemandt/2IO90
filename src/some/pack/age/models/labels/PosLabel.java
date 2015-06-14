@@ -38,7 +38,12 @@ public class PosLabel extends AbstractLabel
     {
         this(point.getX(), point.getY(), newPos, point.four);
     }
-    
+
+    private PosLabel(PosLabel label)
+    {
+        this(label.getX(), label.getY(), label.getPosition(), label.four);
+    }
+
     public LabelPosition getPosition()
     {
         return this.pos;
@@ -189,17 +194,22 @@ public class PosLabel extends AbstractLabel
         return this.equals(other) && this.pos == other.pos;
     }
 
+    public PosLabel copy()
+    {
+        return new PosLabel(this);
+    }
+
     public boolean isValid()
     {
         return this.pos != LabelPosition.NONE;
     }
 
-    public static Point create4PosLabel(int x, int y)
+    public static PosLabel create4PosLabel(int x, int y)
     {
         return new PosLabel(x, y, true);
     }
 
-    public static Point create2PosLabel(int x, int y)
+    public static PosLabel create2PosLabel(int x, int y)
     {
         return new PosLabel(x, y, false);
     }

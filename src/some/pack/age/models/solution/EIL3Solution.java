@@ -33,7 +33,7 @@ public class EIL3Solution extends Solution
         List<AbstractLabel> labels = this.candidates.get(label);
         if (labels == null)
         {
-            labels = (List<AbstractLabel>) label.getCandidates(this);
+            labels = label.getCandidates(this);
             this.candidates.put(label, labels);
         }
         return labels;
@@ -41,6 +41,7 @@ public class EIL3Solution extends Solution
 
     public void removeCandidate(AbstractLabel label)
     {
+        System.out.println("Removed " + label);
         // O sweet irony, why do you work so nicely
         getCandidates(label).remove(label);
     }
@@ -51,13 +52,15 @@ public class EIL3Solution extends Solution
         if (!candidate.isValid()) {
             AxisAlignedBB aabb = candidate.getAABB(this.width, this.height);
             for (AbstractLabel neighbour : getNeighbours(candidate)) {
-                if (!neighbour.isValid()) {
-                    continue;
-                }
-                AxisAlignedBB other = neighbour.getAABB(this.width, this.height);
-                if (other.overlaps(aabb))
-                {
-                    conflicts.add(neighbour);
+                for (AbstractLabel neighbourCandidate : neighbour.getCandidates(this)) {
+                    if (!neighbourCandidate.isValid()) {
+                        continue;
+                    }
+                    AxisAlignedBB other = neighbourCandidate.getAABB(this.width, this.height);
+                    if (other.overlaps(aabb))
+                    {
+                        conflicts.add(neighbourCandidate);
+                    }
                 }
             }
         }

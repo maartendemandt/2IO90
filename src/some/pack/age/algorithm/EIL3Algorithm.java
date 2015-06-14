@@ -6,6 +6,7 @@ import some.pack.age.models.Point;
 import some.pack.age.models.solution.Solution;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import some.pack.age.models.labels.AbstractLabel;
@@ -14,15 +15,18 @@ import some.pack.age.models.labels.AbstractLabel;
  * @author DarkSeraphim.
  */
 @SuppressWarnings("unchecked")
-public class ThreePlusOneAlgorithm implements IAlgorithm
+public class EIL3Algorithm implements IAlgorithm
 {
     // Array which contains all the changes points which haven't been processed again
     private final List<AbstractLabel> changes = new ArrayList<>();
 
+    private int width, height;
+
     @Override
     public Solution computePoints(Set<AbstractLabel> points, int width, int height)
     {
-
+        this.width = width;
+        this.height = height;
         EIL3Solution solution = new EIL3Solution(width, height, getInput(points));
         // Should initialize the candidates for the point
         solution.forEach(solution::getCandidates);
@@ -39,18 +43,20 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
             label = applyRule2(solution, label); // Apply Rule 2 (L2)
             label = applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
 
-            if (old.isClone(label)) {
+            /*if (old.isClone(label)) {
                 // update point to newPoint
                 solution.change(old, label);
-            }
+            }*/
 
             // Apply rules to points in arrayOfChanges
-            processArrayOfChanges(solution, width, height);
         }
+        processArrayOfChanges(solution, width, height);
 
         // ******* //
         // Phase 2 //
         // ******* //
+
+        //System.exit(-1);
 
         // If Phase 2 is needed, execute phase 2
         while (checkPhase2(solution))
@@ -126,16 +132,40 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
 
     AbstractLabel applyRule1(EIL3Solution solution, AbstractLabel point) {
         // Iterate over all points
+        Set<AbstractLabel> neighbours = solution.getNeighbours(point);
         for (AbstractLabel candidate : solution.getCandidates(point)) {
             // Remove all candidates of point except the candidate with no conflicts
-            if (solution.isPossible(candidate))
+            AxisAlignedBB aabb = candidate.getAABB(this.width, this.height);
+            boolean possible = true;
+            for (AbstractLabel neighbour : neighbours)
+            {
+                for (AbstractLabel neighbourCandidate : neighbour.getCandidates(solution))
+                {
+                    if (!neighbourCandidate.isValid())
+                    {
+                        continue;
+                    }
+                    AxisAlignedBB other = neighbourCandidate.getAABB(this.width, this.height);
+                    if (other.overlaps(aabb))
+                    {
+                        possible = false;
+                        break;
+                    }
+                }
+                if (!possible)
+                {
+                    break;
+                }
+            }
+            if (!possible)
             {
                 continue;
             }
-            solution.getCandidates(point).stream()
-                                         .filter(other -> !candidate.equals(other))
+            new ArrayList<>(solution.getCandidates(point)).stream()
+                                         .filter(other -> !candidate.isClone(other))
                                          .forEach(solution::removeCandidate);
-            this.changes.addAll(solution.getNeighbours(candidate));
+
+            this.changes.add(candidate);
             break;
         }
         return point;
@@ -154,12 +184,12 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
             if (conflicts.size() == 1) {
                 // Get point of conflicted label
                 // What is the parent?
-                pointConflictedLabel = candidate;
+                pointConflictedLabel = conflicts.get(0);
 
                 // Loop through all candidates of conflicted point
                 for (AbstractLabel candidateConflictPoint : solution.getCandidates(pointConflictedLabel)) {
                     // Check if its not the label which was in conflict with the candidate
-                    if (!candidateConflictPoint.isClone(conflicts.get(0)) && candidateConflictPoint.equals(conflicts.get(0))) {
+                    if (!candidateConflictPoint.isClone(pointConflictedLabel) && candidateConflictPoint.equals(conflicts.get(0))) {
                         List<AbstractLabel> conflictsCandidateConflictPoint = solution.getConflicts(candidateConflictPoint);
 
                         // Variable to check if all conflicts can be avoided with rule 2
@@ -184,20 +214,17 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
 
             // If there is a conflictSolver, use it!
             if (conflictSolver != null) {
+                final AbstractLabel cs = conflictSolver;
                 // Remove all candidates of point except the candidate with no conflicts
-                solution.getCandidates(point).stream()
+                new ArrayList<>(solution.getCandidates(point)).stream()
                                          .filter(candidate::isClone)
                                          .forEach(solution::removeCandidate);
 
                 this.changes.addAll(solution.getNeighbours(point));
 
-                // Remove all candidates of the conflict point except the conflictSolver
-                for (AbstractLabel label : solution.getCandidates(pointConflictedLabel)) {
-                    if (label != conflictSolver) {
-                        solution.removeCandidate(label);
-                    }
-                }
-
+                new ArrayList<>(solution.getCandidates(pointConflictedLabel)).stream()
+                                        .filter(label -> !label.isClone(cs))
+                                        .forEach(solution::removeCandidate);
                 this.changes.addAll(solution.getNeighbours(pointConflictedLabel));
             }
         }
@@ -243,9 +270,9 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
         for(AbstractLabel point : changes)
         {
             AbstractLabel old = point;
-            point = applyRule1(solution, point); // Apply Rule 1 (L1)
-            point = applyRule2(solution, point); // Apply Rule 2 (L2)
-            point = applyRule3(solution, point, width, height); // Apply Rule 3 (L3)
+            // point = applyRule1(solution, point); // Apply Rule 1 (L1)
+            // point = applyRule2(solution, point); // Apply Rule 2 (L2)
+            // point = applyRule3(solution, point, width, height); // Apply Rule 3 (L3)
 
             if (!old.isClone(point)) {
                 // update point to newPoint
@@ -257,15 +284,18 @@ public class ThreePlusOneAlgorithm implements IAlgorithm
 
     boolean checkPhase2(EIL3Solution solution)
     {
+        boolean b = false;
+        int size = 0;
         for (AbstractLabel point : solution)
         {
             List<AbstractLabel> candidates = solution.getCandidates(point);
-
+            size += candidates.size();
             if (candidates.size() > 1)
             {
-                return true;
+                b = true;
             }
         }
-        return false;
+        System.out.println(size);
+        return b;
     }
 }
