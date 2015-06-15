@@ -7,6 +7,7 @@ from itertools import product
 DEBUG = False
 
 seed("1234")
+
 # Reads arguments
 itr = iter(sys.argv)
 while 1:
@@ -147,13 +148,6 @@ try:
 except NameError:
     sys.exit("[ERROR] algorithm not defined")
 
-# Adds input argument to output file
-output = []
-output.append("placement model: " + model)
-output.append("width: " + str(width))
-output.append("height: " + str(height))
-output.append("number of points: " + str(n))
-
 print("generating...")
 
 if distribution == "random" or distribution == "clustered":
@@ -166,9 +160,9 @@ if distribution == "random" or distribution == "clustered":
 
     points = []
 
-
+output_points = []
 def append_point(x, y):
-    output.append(str(x) + (5 - len(str(x))) * " " + str(y))
+    output_points.append(str(x) + (5 - len(str(x))) * " " + str(y))
 
 # Distributes points randomly
 if distribution == "random":
@@ -219,31 +213,6 @@ elif distribution == "easiest":
 elif distribution == "hardest":
     k = n  # points yet to be placed
 
-    # if model == "2pos":
-        # number_of_rows = floor(10000 / (height + 1))
-        # number_of_columns = 2 * floor(10000 / (2 * width + 2))
-        # for i, j in product(range(number_of_rows), range(number_of_columns)):
-            # if k > 0:
-                # y = i * (height + 1)
-                # x = j * (width + 1) + (j + 1) % 2 * width
-                # append_point(x, y)
-                # k -= 1
-            # else:
-                # break
-
-    # elif model == "4pos":
-        # number_of_rows = 2 * floor(10000 / (2 * height + 1))
-        # number_of_columns = 2 * floor(10000 / (2 * width + 1))
-        # for i, j in product(range(number_of_rows), range(number_of_columns)):
-            # if k > 0:
-                # y = 1 + i * (height + 1) + (i + 1) % 2 * height
-                # x = j * (width + 1) + (j + 1) % 2 * width
-                # append_point(x, y)
-                # k -= 1
-            # else:
-                # break
-
-    # elif model == "1slider":
     number_of_rows = floor(10000 / (2.5 * height + 3))
     number_of_columns = floor((10000 - 2.5 * width) / (0.5 * width + 1))
     for i, j in product(range(number_of_rows), range(number_of_columns)):
@@ -330,6 +299,17 @@ elif distribution == "clustered":
                 break
 
 
+               
+# Adds input argument to output file
+output = []
+output.append("placement model: " + model)
+output.append("width: " + str(width))
+output.append("height: " + str(height))
+output.append("number of points: " + str(n))
+
+# Adds points to output file
+output += output_points
+                
 # Writes to file
 file_name = "sample-" + model + "-w" + str(width) + "-h" + str(height) + "-n" + str(n) + "-" + distribution + "-" + algorithm + ".txt"
 output_file = open(file_name, "w")

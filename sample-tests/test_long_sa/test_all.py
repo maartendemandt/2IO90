@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import re
 
 print("TESTING ALL SAMPLES...")
 
@@ -9,7 +10,16 @@ try:
     samples = os.listdir("./input")
 except FileNotFoundError:
     sys.exit("[ERROR] Input missing")
-
+    
+# from http://blog.codinghorror.com/sorting-for-humans-natural-sort-order/
+def nat_sort(l):
+    convert = lambda text: int(text) if text.isdigit() else text.lower() 
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(l, key = alphanum_key)
+    
+# Sorts samples naturally
+samples = nat_sort(samples)
+    
 # Creates an output folder if it does not yet exist
 if not os.path.exists("./output"):
     os.makedirs("./output")
