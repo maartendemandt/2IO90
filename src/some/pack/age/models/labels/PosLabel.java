@@ -170,17 +170,47 @@ public class PosLabel extends AbstractLabel
         final PosLabel self = this;
         if (!this.four)
         {
-            return new ArrayList<AbstractLabel>(){{
-                add(self);
-                add(new PosLabel(self, self.pos.getOtherTwoPos()));
-            }};
+            return new ArrayList<AbstractLabel>(){
+                {
+                    add(self);
+                    add(new PosLabel(self, self.pos.getOtherTwoPos()));
+                }
+
+                public boolean remove(Object o)
+                {
+                    AbstractLabel.STRICT_EQUALS = true;
+                    try
+                    {
+                        return super.remove(o);
+                    }
+                    finally
+                    {
+                        AbstractLabel.STRICT_EQUALS = false;
+                    }
+                }
+            };
         }
-        return new ArrayList<AbstractLabel>() {{
-            add(new PosLabel(self, LabelPosition.NORTH_EAST));
-            add(new PosLabel(self, LabelPosition.NORTH_WEST));
-            add(new PosLabel(self, LabelPosition.SOUTH_WEST));
-            add(new PosLabel(self, LabelPosition.SOUTH_EAST));
-        }};
+        return new ArrayList<AbstractLabel>() {
+            {
+                add(new PosLabel(self, LabelPosition.NORTH_EAST));
+                add(new PosLabel(self, LabelPosition.NORTH_WEST));
+                add(new PosLabel(self, LabelPosition.SOUTH_WEST));
+                add(new PosLabel(self, LabelPosition.SOUTH_EAST));
+            }
+
+            public boolean remove(Object o)
+            {
+                AbstractLabel.STRICT_EQUALS = true;
+                try
+                {
+                    return super.remove(o);
+                }
+                finally
+                {
+                    AbstractLabel.STRICT_EQUALS = false;
+                }
+            }
+        };
     }
 
     @Override
@@ -191,6 +221,10 @@ public class PosLabel extends AbstractLabel
             return false;
         }
         PosLabel other = (PosLabel) obj;
+        if (AbstractLabel.STRICT_EQUALS)
+        {
+            return this.pos == other.pos;
+        }
         return this.equals(other) && this.pos == other.pos;
     }
 

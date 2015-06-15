@@ -53,7 +53,7 @@ public class EIL3Solution extends Solution
             AxisAlignedBB aabb = candidate.getAABB(this.width, this.height);
             for (AbstractLabel neighbour : getNeighbours(candidate))
             {
-                for (AbstractLabel neighbourCandidate : neighbour.getCandidates(this))
+                for (AbstractLabel neighbourCandidate : this.getCandidates(neighbour))
                 {
                     if (!neighbourCandidate.isValid())
                     {

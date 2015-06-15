@@ -118,7 +118,11 @@ public class SliderLabel extends AbstractLabel
             return false;
         }
         SliderLabel other = (SliderLabel) obj;
-        return this.equals(other) && this.slider.isPresent() == other.slider.isPresent() && sameSlider(this.slider.get(), other.slider.get());
+        if (STRICT_EQUALS)
+        {
+            return this.slider.isPresent() == other.slider.isPresent() && (!this.slider.isPresent() || (sameSlider(this.slider.get(), other.slider.get())));
+        }
+        return this.equals(other) && this.slider.isPresent() == other.slider.isPresent() && (!this.slider.isPresent() || (sameSlider(this.slider.get(), other.slider.get())));
     }
 
     @Override

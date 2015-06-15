@@ -12,6 +12,9 @@ import java.util.Optional;
  */
 public abstract class AbstractLabel implements Point
 {
+
+    protected static boolean STRICT_EQUALS = false;
+
     protected final Point point;
 
     public AbstractLabel(int x, int y)
@@ -59,7 +62,12 @@ public abstract class AbstractLabel implements Point
             return false;
         }
         AbstractLabel other = (AbstractLabel) object;
-        return this.point.equals(other.point);
+        boolean equals = this.point.equals(other.point);
+        if (STRICT_EQUALS)
+        {
+            equals = equals && this.isClone(other);
+        }
+        return equals;
     }
 
     public abstract boolean isClone(AbstractLabel point);
