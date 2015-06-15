@@ -1,10 +1,11 @@
 package some.pack.age;
 
+import some.pack.age.algorithm.AnnealingAlgorithm;
 import some.pack.age.algorithm.IAlgorithm;
 import some.pack.age.models.Point;
-import some.pack.age.models.PosPoint;
-import some.pack.age.models.SliderPoint;
-import some.pack.age.models.Solution;
+import some.pack.age.models.labels.PosLabel;
+import some.pack.age.models.labels.SliderLabel;
+import some.pack.age.models.solution.Solution;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import some.pack.age.models.labels.AbstractLabel;
+import some.pack.age.util.ConvertedSet;
 
 /**
  * @author DarkSeraphim.
@@ -116,6 +119,10 @@ public class MapLabeler
             assert this.width > 0 : "No width has been defined";
             assert this.height > 0 : "No height has been defined";
             this.algorithm = Main.USE_ME_SENPAI.isPresent() ? Main.USE_ME_SENPAI.get() : this.algorithm;
+            if (this.algorithm instanceof AnnealingAlgorithm && Main.TIME_LIMIT.isPresent())
+            {
+                ((AnnealingAlgorithm) this.algorithm).setNumberOfMinutes(Main.TIME_LIMIT.get());
+            }
             return new MapLabeler(this.model, this.algorithm, this.width, this.height);
         }
     }
@@ -156,7 +163,7 @@ public class MapLabeler
 
     public Solution computePoints()
     {
-        return this.algorithm.computePoints(new HashSet<>(this.points), this.width, this.height);
+        return this.algorithm.computePoints(new ConvertedSet<>(new HashSet<>(this.points), AbstractLabel.class), this.width, this.height);
     }
 
     public Set<Point> getPoints()
@@ -190,13 +197,13 @@ public class MapLabeler
         switch (this.model)
         {
             case TWO_POS:
-                point = PosPoint.create2posPoint(x, y);
+                point = PosLabel.create2PosLabel(x, y);
                 break;
             case FOUR_POS:
-                point = PosPoint.create4posPoint(x, y);
+                point = PosLabel.create4PosLabel(x, y);
                 break;
             case SLIDER:
-                point = new SliderPoint(x, y);
+                point = new SliderLabel(x, y);
                 break;
         }
         this.points.add(point);

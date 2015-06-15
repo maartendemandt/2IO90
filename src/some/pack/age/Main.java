@@ -2,9 +2,9 @@ package some.pack.age;
 
 import some.pack.age.algorithm.AnnealingAlgorithm;
 import some.pack.age.algorithm.IAlgorithm;
-import some.pack.age.algorithm.ThreePlusOneAlgorithm;
+import some.pack.age.algorithm.EIL3Algorithm;
 import some.pack.age.models.Point;
-import some.pack.age.models.Solution;
+import some.pack.age.models.solution.Solution;
 import some.pack.age.test.ImageGenerator;
 
 import java.io.File;
@@ -39,12 +39,14 @@ public class Main
 
     protected static Optional<IAlgorithm> USE_ME_SENPAI = Optional.empty();
 
+    protected static Optional<Double> TIME_LIMIT = Optional.empty();
+
     public static void main(String[] args) throws IOException
     {
         parseArguments(args);
         long start = System.nanoTime();
-        MapLabeler.registerPlacementAlgorithm("2pos", new AnnealingAlgorithm());
-        MapLabeler.registerPlacementAlgorithm("4pos", new AnnealingAlgorithm());
+        MapLabeler.registerPlacementAlgorithm("2pos", new EIL3Algorithm());
+        MapLabeler.registerPlacementAlgorithm("4pos", new EIL3Algorithm());
         MapLabeler.registerPlacementAlgorithm("1slider", new AnnealingAlgorithm());
         Scanner input = new Scanner(FILE != null ? new FileInputStream(FILE) : System.in);
         MapLabeler.Builder builder = MapLabeler.builder();
@@ -96,7 +98,7 @@ public class Main
         if (USE_ME_SENPAI.isPresent()){
             if (USE_ME_SENPAI.get() instanceof AnnealingAlgorithm){
                 System.out.println("Algorithm used: sa"); 
-            } else if (USE_ME_SENPAI.get() instanceof ThreePlusOneAlgorithm){
+            } else if (USE_ME_SENPAI.get() instanceof EIL3Algorithm){
                 System.out.println("Algorithm used: eil3");
             }
         }
@@ -205,13 +207,29 @@ public class Main
                         case "eil3":
                         case "l3":
                         case "et":
-                            USE_ME_SENPAI = Optional.of(new ThreePlusOneAlgorithm());
+                            USE_ME_SENPAI = Optional.of(new EIL3Algorithm());
                             break;
                         case "annealing":
                         case "simulatedannealing":
                         case "sa":
                             USE_ME_SENPAI = Optional.of(new AnnealingAlgorithm());
                             break;
+                    }
+                    break;
+                case "--time-limit":
+                    if (kv.length != 2)
+                    {
+                        System.out.println("Missing time limit!");
+                        break;
+                    }
+                    try
+                    {
+                        double limit = Double.parseDouble(kv[1].replace(',', '.'));
+                        Main.TIME_LIMIT = Optional.of(limit);
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        System.out.println(kv[2] + " is not a valid double");
                     }
                     break;
                 case "--test":

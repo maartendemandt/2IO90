@@ -1,21 +1,28 @@
 package some.pack.age.algorithm;
 
-import java.util.ArrayList;
-import some.pack.age.models.Point;
-import some.pack.age.models.Solution;
-import some.pack.age.test.Scheduler;
+import some.pack.age.models.solution.Solution;
+import some.pack.age.models.solution.AnnealingSolution;
 
 import java.util.Optional;
 import java.util.Set;
-import some.pack.age.models.solutionChange;
+import some.pack.age.models.labels.AbstractLabel;
+import some.pack.age.test.Scheduler;
 
 /**
  * @author G to the Foks and J to the Adegeest
  */
 public class AnnealingAlgorithm implements IAlgorithm
 {
+
+    private double numberOfMinutes = 4.9;
+
+    public void setNumberOfMinutes(double n)
+    {
+        this.numberOfMinutes = n;
+    }
+
     @Override
-    public Solution computePoints(Set<Point> points, int width, int height)
+    public Solution computePoints(Set<AbstractLabel> points, int width, int height)
     {
         // NEIGHBOUR SOLUTION IMPROVEMENT
         double solutionQuality;
@@ -23,10 +30,10 @@ public class AnnealingAlgorithm implements IAlgorithm
         
         //#ADDED
         long startTime = System.currentTimeMillis(); //JG
-        double numberOfMinutes = 4.9; //JG
         //end
         
-        Solution solution = getRandomSolution(width, height, points);
+        AnnealingSolution solution = getRandomSolution(width, height, points);
+        solution.recomputeNeighbours();
         double temperature = getAppropiateTemperature(points);
         double initialTemperature = temperature;
         //double decreaseRate = getAppropiateDecreaseRate(temperature);
@@ -38,11 +45,10 @@ public class AnnealingAlgorithm implements IAlgorithm
         solutionQuality = maxQuality; // NEIGHBOUR SOLUTION IMPROVEMENT
         System.out.println("Quality at start: " + maxQuality);
         //Scheduler s = new Scheduler();
-        //s.setMaxPhases((int) Math.round((temperature - minTemperature) / decreaseRate));
+        //s.setMaxTemperature(initialTemperature, minTemperature);
         while (annualSchedule(temperature, minTemperature) && solutionQuality != points.size() ){
-            solutionChange toChange = getNeighborSolutions(solution);
-            solution = toChange.execute(solution);
-            
+            proposeNeighborSolution(solution);
+
             maxQuality = Math.max(solution.getQuality(), maxQuality);
             double probability = getProbability(solution.getQuality(), solutionQuality, temperature);
 
@@ -54,17 +60,17 @@ public class AnnealingAlgorithm implements IAlgorithm
             if( checkIfAccepted(probability) ){
                 solutionQuality = solution.getQuality(); // NEIGHBOUR SOLUTION IMPROVEMENT
             } else {
-                solution = toChange.revert(solution);
+                solution.reset();
             }
 
-            if(solutionQuality > bestSolution.getQuality()){ // NEIGHBOUR SOLUTION IMPROVEMENT
-                bestSolution = solution;
+            if(solutionQuality > bestSolution.getQuality()) { // NEIGHBOUR SOLUTION IMPROVEMENT
+                // We need a copy >.<
+                bestSolution = new AnnealingSolution(solution);
             }
 
             //#ADDED
             temperature = calculateTemperature(initialTemperature, startTime, numberOfMinutes);
-            
-            //s.bumpPhase();
+           //s.setTemperature(temperature);
         }
         //s.kill();
         System.out.println("Max quality: "+maxQuality);
@@ -76,26 +82,26 @@ public class AnnealingAlgorithm implements IAlgorithm
 //TODO: uitzoeken wat een goed annealig schedule is. (temperature en decrease rate en waneer we stoppen)
 
     //generates a random solution
-    Solution getRandomSolution(int width, int height, Set<Point> problem){
-        Solution solution = new Solution(width, height);
+    AnnealingSolution getRandomSolution(int width, int height, Set<AbstractLabel> problem){
+        AnnealingSolution solution = new AnnealingSolution(width, height);
 
         int i = 0;
-        for(Point point : problem) {
-            Optional<Point> p = point.getRandomFreeLabel(solution);
-            if (p.isPresent())
+        for(AbstractLabel label : problem) {
+            Optional<AbstractLabel> optionalLabel = label.getRandomFreeLabel(solution);
+            if (optionalLabel.isPresent())
             {
-                solution.add(p.get());
+                solution.add(optionalLabel.get());
             }
             else
             {
-                solution.add(point.getDefault());
+                solution.add(label.getDefault());
             }
         }
 
         return solution;
     }
 
-    double getAppropiateTemperature(Set<Point> problem){
+    double getAppropiateTemperature(Set<AbstractLabel> problem){
         //Gekke calculations ask Gerson
         return 3.5;
 
@@ -117,18 +123,18 @@ public class AnnealingAlgorithm implements IAlgorithm
     }
 
 
-    solutionChange getNeighborSolutions(Solution solution){
+    void proposeNeighborSolution(Solution solution){
         //get a random point that has an option to change the label position
-        Point p = solution.getRandomPoint(); //TODO alleen interessnten punten teruggeven
+        AbstractLabel label = solution.getRandomLabel(); //TODO alleen interessnten punten teruggeven
         //change the current label with a random other label that has no conflicts
-        Optional<Point> point = p.getMutation(solution);
+        Optional<AbstractLabel> point = label.getMutation(solution);
         if (point.isPresent())
         {
-            return new solutionChange(p, point.get());
+            solution.change(label, point.get());
         }
         else
         {
-            return new solutionChange(p);
+            solution.remove(label);
         }
     }
 

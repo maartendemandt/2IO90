@@ -1,5 +1,7 @@
 package some.pack.age.models;
 
+import some.pack.age.quadtree.QuadTree;
+
 /**
  * @author DarkSeraphim.
  */
@@ -20,13 +22,19 @@ public class AxisAlignedBB
         this.y = Math.min(y, v);
         this.u = Math.max(x, u);
         this.v = Math.max(y, v);
-        assert this.x < this.u : "x must be smaller than u";
-        assert this.y < this.v : "y must be smaller than v";
+        assert this.x <= this.u : "x must be smaller than u";
+        assert this.y <= this.v : "y must be smaller than v";
+    }
+
+    public boolean contains(Point point)
+    {
+        return this.x <= point.getX() && point.getX() <= this.u
+            && this.y <= point.getY() && point.getY() <= this.v;
     }
 
     public boolean overlaps(AxisAlignedBB aabb)
     {
-        return !(aabb.x >= this.u || aabb.u <= this.x || aabb.y >= this.v || aabb.v <= this.y);
+        return !(aabb.x > this.u || aabb.u < this.x || aabb.y > this.v || aabb.v < this.y);
     }
 
     public static AxisAlignedBB createLabel(int x, int y, int w, int h)
