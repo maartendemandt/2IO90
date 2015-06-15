@@ -25,7 +25,7 @@ public class EIL3Solution extends Solution
     }
 
     public EIL3Solution(int width, int height, List<AbstractLabel> points) {
-        super(width, height, new HashSet<>(points));
+        super(width, height, new LinkedHashSet<>(points));
     }
 
     public List<AbstractLabel> getCandidates(AbstractLabel label)
@@ -41,7 +41,6 @@ public class EIL3Solution extends Solution
 
     public void removeCandidate(AbstractLabel label)
     {
-        System.out.println("Removed " + label);
         // O sweet irony, why do you work so nicely
         getCandidates(label).remove(label);
     }
@@ -49,11 +48,15 @@ public class EIL3Solution extends Solution
     public List<AbstractLabel> getConflicts(AbstractLabel candidate)
     {
         List<AbstractLabel> conflicts = new ArrayList<>();
-        if (!candidate.isValid()) {
+        if (candidate.isValid())
+        {
             AxisAlignedBB aabb = candidate.getAABB(this.width, this.height);
-            for (AbstractLabel neighbour : getNeighbours(candidate)) {
-                for (AbstractLabel neighbourCandidate : neighbour.getCandidates(this)) {
-                    if (!neighbourCandidate.isValid()) {
+            for (AbstractLabel neighbour : getNeighbours(candidate))
+            {
+                for (AbstractLabel neighbourCandidate : neighbour.getCandidates(this))
+                {
+                    if (!neighbourCandidate.isValid())
+                    {
                         continue;
                     }
                     AxisAlignedBB other = neighbourCandidate.getAABB(this.width, this.height);
