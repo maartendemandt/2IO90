@@ -31,16 +31,6 @@ public class EIL3Algorithm implements IAlgorithm
         // Should initialize the candidates for the point
         solution.forEach(solution::getCandidates);
 
-        /*AbstractLabel testlabel = PosLabel.create4PosLabel(893, 2204);
-        AbstractLabel testlabel2 = PosLabel.create4PosLabel(890, 2224);
-        System.out.println(solution.getNeighbours(testlabel));
-        System.out.println(solution.getNeighbours(testlabel2));
-        new ArrayList<>(solution.getCandidates(testlabel2)).forEach(solution::removeCandidate);
-        System.out.println(solution.getCandidates(testlabel).size());
-        System.out.println(applyRule1(solution, testlabel));
-        System.out.println(solution.getCandidates(testlabel).size());
-
-        System.exit(-1);*/
         // ******* //
         // Phase 1 //
         // ******* //
@@ -49,16 +39,9 @@ public class EIL3Algorithm implements IAlgorithm
         for (AbstractLabel label : solution)
         {
             AbstractLabel old = label;
-            label = applyRule1(solution, label); // Apply Rule 1 (L1)
-            label = applyRule2(solution, label); // Apply Rule 2 (L2)
-            label = applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
-
-            /*if (old.isClone(label)) {
-                // update point to newPoint
-                solution.change(old, label);
-            }*/
-
-            // Apply rules to points in arrayOfChanges
+            if (applyRule1(solution, label)) continue; // Apply Rule 1 (L1)
+            if (applyRule2(solution, label)) continue; // Apply Rule 2 (L2)
+            applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
         }
         processArrayOfChanges(solution, width, height);
 
@@ -116,9 +99,9 @@ public class EIL3Algorithm implements IAlgorithm
                     for (AbstractLabel label : solution.getNeighbours(candidateMostConflicts))
                     {
                         AbstractLabel old = label;
-                        label = applyRule1(solution, label); // Apply Rule 1 (L1)
-                        label = applyRule2(solution, label); // Apply Rule 2 (L2)
-                        label = applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
+                        applyRule1(solution, label); // Apply Rule 1 (L1)
+                        applyRule2(solution, label); // Apply Rule 2 (L2)
+                        applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
                     }
                     // Apply rules to points in arrayOfChanges
                     processArrayOfChanges(solution, width, height);
@@ -127,16 +110,18 @@ public class EIL3Algorithm implements IAlgorithm
             for (AbstractLabel label : solution)
             {
                 AbstractLabel old = label;
-                label = applyRule1(solution, label); // Apply Rule 1 (L1)
-                label = applyRule2(solution, label); // Apply Rule 2 (L2)
-                label = applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
+                applyRule1(solution, label); // Apply Rule 1 (L1)
+                applyRule2(solution, label); // Apply Rule 2 (L2)
+                applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
             }
             processArrayOfChanges(solution, width, height);
         }
+        /*System.out.println(this.changes.size());
         solution.getPoints().stream()
                 .filter(point -> solution.getCandidates(point).size() <= 1)
                 .forEach(this.changes::add);
-        processArrayOfChanges(solution, width, height);
+        System.out.println(this.changes.size());
+        processArrayOfChanges(solution, width, height);*/
         // ******* //
         //  DONE!  //
         // ******* //
@@ -153,7 +138,7 @@ public class EIL3Algorithm implements IAlgorithm
         return points;
     }
 
-    AbstractLabel applyRule1(EIL3Solution solution, AbstractLabel point) {
+    boolean applyRule1(EIL3Solution solution, AbstractLabel point) {
         // Iterate over all points
         Set<AbstractLabel> neighbours = solution.getNeighbours(point);
         for (AbstractLabel candidate : solution.getCandidates(point))
@@ -194,12 +179,12 @@ public class EIL3Algorithm implements IAlgorithm
             }
             new ArrayList<>(solution.getCandidates(point)).forEach(solution::removeCandidate);
             this.changes.add(candidate);
-            break;
+            return true;
         }
-        return point;
+        return false;
     }
 
-    AbstractLabel applyRule2(EIL3Solution solution, AbstractLabel point) {
+    boolean applyRule2(EIL3Solution solution, AbstractLabel point) {
         for (AbstractLabel candidate : solution.getCandidates(point)) {
             // This will store the label which makes sure the candidate can be part of the end solution
             AbstractLabel conflictSolver = null;
@@ -268,11 +253,11 @@ public class EIL3Algorithm implements IAlgorithm
 
                 new ArrayList<>(solution.getCandidates(cs)).forEach(solution::removeCandidate);
                 this.changes.add(conflictSolver);
-                break;
+                return true;
             }
         }
 
-        return point;
+        return false;
     }
 
     AbstractLabel applyRule3(EIL3Solution solution, AbstractLabel point, int width, int height) {
