@@ -1,8 +1,8 @@
 package some.pack.age.quadtree;
 
 import some.pack.age.models.AxisAlignedBB;
-import some.pack.age.models.quadtree.Node;
 import some.pack.age.models.Point;
+import some.pack.age.models.quadtree.Node;
 
 import java.util.HashSet;
 import java.util.Set;

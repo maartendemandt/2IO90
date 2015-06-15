@@ -1,8 +1,5 @@
 package some.pack.age.models;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
  * @author DarkSeraphim.
  */
