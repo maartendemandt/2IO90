@@ -1,11 +1,16 @@
 package some.pack.age.quadtree;
 
+<<<<<<< HEAD
 import some.pack.age.models.AxisAlignedBB;
 import some.pack.age.models.quadtree.Node;
+=======
+import some.pack.age.models.NodeType;
+>>>>>>> fcf8983d963b0bf795fec2a116970fb86c46cb4d
 import some.pack.age.models.Point;
+import some.pack.age.models.Node;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuadTree {
 
@@ -70,6 +75,7 @@ public class QuadTree {
         }
     }
     
+<<<<<<< HEAD
     public Set<Point> intersect(final Point point, int width, int height) {
         int xMax = point.getX() + 2 * width;
         int xMin = point.getX() - 2 * width;
@@ -112,7 +118,57 @@ public class QuadTree {
         }
         if(node.hasSw() && node.getSw().getBoundingBox().overlaps(aabb)){
             intersectQuadrant(point, node.getSw(), aabb, reporter);
+=======
+    public void intersect(Point point, int width, int height){
+        int xMax = point.getX() + 2*width;
+        int xMin = point.getX() - 2*width;
+        int yMax = point.getY() + 2*height;
+        int yMin = point.getY() - 2*height;
+        
+        intersectQuadrant(point, root, xMax, xMin, yMax, yMin);
+    }
+    
+    public Boolean intersectQuadrant(Point point, Node node, int xMax, int xMin, int yMax, int yMin){
+        boolean neighbour = false;
+        if(node.getX() <= xMax && node.getX() >= xMin && node.getY() <= yMax && node.getY() >= yMin){
+            //Point Inside
+            neighbour = true;
+            /* if(node.hasNe()){
+                intersectQuadrant(point, node.getNe(), xMax, xMin, yMax, yMin);
+            }
+            if(node.hasNw()){
+                intersectQuadrant(point, node.getNw(), xMax, xMin, yMax, yMin);
+            }
+            if(node.hasSw()){
+                intersectQuadrant(point, node.getSe(), xMax, xMin, yMax, yMin);
+            }
+            if(node.hasSe()){
+                intersectQuadrant(point, node.getSw(), xMax, xMin, yMax, yMin);
+            } */
         }
-        return reporter;
+        else {
+            if(point.getX() <= node.getX()  && node.getY() > point.getY()){
+                if(node.hasNw()){
+                    intersectQuadrant(point, node.getNw(), xMax, xMin, yMax, yMin);
+                }
+            }
+            else if(point.getX() > node.getX() && point.getY() >= node.getY()){
+                if(node.hasNe()){
+                    intersectQuadrant(point, node.getNe(), xMax, xMin, yMax, yMin);
+                }
+            }
+            else if(point.getX() >= node.getX() && point.getY() < node.getY()){
+                if(node.hasSe()){
+                    intersectQuadrant(point, node.getSe(), xMax, xMin, yMax, yMin);
+                }
+            }
+            else if(point.getX() < node.getX() && point.getY() <= node.getY()){
+                if(node.hasSw()){
+                    intersectQuadrant(point, node.getSw(), xMax, xMin, yMax, yMin);
+                }
+            }
+>>>>>>> fcf8983d963b0bf795fec2a116970fb86c46cb4d
+        }
+        return neighbour;
     }
 }
