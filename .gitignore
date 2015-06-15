@@ -1,6 +1,7 @@
 .idea
 *.iml
 /build/
+/build-test/
 /nbproject/private/
 /dried-peach/
 /images/
