@@ -172,8 +172,8 @@ public class PosLabel extends AbstractLabel
         {
             return new ArrayList<AbstractLabel>(){
                 {
-                    add(self);
-                    add(new PosLabel(self, self.pos.getOtherTwoPos()));
+                    add(new PosLabel(self, LabelPosition.NORTH_EAST));
+                    add(new PosLabel(self, LabelPosition.NORTH_WEST));
                 }
 
                 public boolean remove(Object o)
