@@ -15,36 +15,10 @@ import some.pack.age.models.labels.AbstractLabel;
 /**
  * @author DarkSeraphim.
  */
-@SuppressWarnings("unchecked")
 public class EIL3Algorithm implements IAlgorithm
 {
     // Array which contains all the changes points which haven't been processed again
-    private final List<AbstractLabel> changes = new ArrayList<AbstractLabel>()
-    {
-        @Override
-        public boolean add(AbstractLabel element)
-        {
-            if (false && element.getX() == 2664 && element.getY() == 3746)
-            {
-                System.out.println(element);
-                System.out.println(s.getNeighbours(element));
-                boolean contains = false;
-                for (AbstractLabel n : s.getNeighbours(element)) {
-                    System.out.println(element.getAABB(10, 20) + " with " + n);
-                    System.out.println(element.getAABB(10, 20).contains(n));
-                }
-                System.out.println(s.getCandidates(element));
-                for (StackTraceElement ste : Thread.currentThread().getStackTrace())
-                {
-                    System.out.println(ste.toString());
-                }
-                System.exit(-1);
-            }
-            return super.add(element);
-        }
-    };
-
-    EIL3Solution s;
+    private final List<AbstractLabel> changes = new ArrayList<>();
 
     private int width, height;
 
@@ -54,7 +28,6 @@ public class EIL3Algorithm implements IAlgorithm
         this.width = width;
         this.height = height;
         EIL3Solution solution = new EIL3Solution(width, height, getInput(points));
-        s = solution;
         // Should initialize the candidates for the point
         solution.forEach(solution::getCandidates);
 
@@ -264,6 +237,11 @@ public class EIL3Algorithm implements IAlgorithm
                         {
                             // If the point of the label which is in conflict with the candidate of the conflict point --> Rule 2 cannot be applied
                             if (cAABB.overlaps(conflictCandidateConflictPoint.getAABB(this.width, this.height)))
+                            {
+                                useableCandidate = false;
+                            }
+                            // If there's a third point part of the story, disallow the change
+                            else if (!conflictCandidateConflictPoint.equals(candidate))
                             {
                                 useableCandidate = false;
                             }
