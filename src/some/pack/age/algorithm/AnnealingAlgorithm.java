@@ -13,6 +13,14 @@ import some.pack.age.test.Scheduler;
  */
 public class AnnealingAlgorithm implements IAlgorithm
 {
+
+    private double numberOfMinutes = 4.9;
+
+    public void setNumberOfMinutes(double n)
+    {
+        this.numberOfMinutes = n;
+    }
+
     @Override
     public Solution computePoints(Set<AbstractLabel> points, int width, int height)
     {
@@ -22,7 +30,6 @@ public class AnnealingAlgorithm implements IAlgorithm
         
         //#ADDED
         long startTime = System.currentTimeMillis(); //JG
-        double numberOfMinutes = 4.9; //JG
         //end
         
         AnnealingSolution solution = getRandomSolution(width, height, points);

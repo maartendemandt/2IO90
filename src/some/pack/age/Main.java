@@ -39,11 +39,13 @@ public class Main
 
     protected static Optional<IAlgorithm> USE_ME_SENPAI = Optional.empty();
 
+    protected static Optional<Double> TIME_LIMIT = Optional.empty();
+
     public static void main(String[] args) throws IOException
     {
         parseArguments(args);
         long start = System.nanoTime();
-        MapLabeler.registerPlacementAlgorithm("2pos", new AnnealingAlgorithm());
+        MapLabeler.registerPlacementAlgorithm("2pos", new EIL3Algorithm());
         MapLabeler.registerPlacementAlgorithm("4pos", new EIL3Algorithm());
         MapLabeler.registerPlacementAlgorithm("1slider", new AnnealingAlgorithm());
         Scanner input = new Scanner(FILE != null ? new FileInputStream(FILE) : System.in);
@@ -212,6 +214,22 @@ public class Main
                         case "sa":
                             USE_ME_SENPAI = Optional.of(new AnnealingAlgorithm());
                             break;
+                    }
+                    break;
+                case "--time-limit":
+                    if (kv.length != 2)
+                    {
+                        System.out.println("Missing time limit!");
+                        break;
+                    }
+                    try
+                    {
+                        double limit = Double.parseDouble(kv[1].replace(',', '.'));
+                        Main.TIME_LIMIT = Optional.of(limit);
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        System.out.println(kv[2] + " is not a valid double");
                     }
                     break;
                 case "--test":

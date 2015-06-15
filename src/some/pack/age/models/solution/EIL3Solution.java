@@ -39,6 +39,11 @@ public class EIL3Solution extends Solution
         return labels;
     }
 
+    public void change(AbstractLabel old, AbstractLabel _new)
+    {
+        super.change(old, _new);
+    }
+
     public void removeCandidate(AbstractLabel label)
     {
         // O sweet irony, why do you work so nicely

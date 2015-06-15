@@ -19,7 +19,32 @@ import some.pack.age.models.labels.AbstractLabel;
 public class EIL3Algorithm implements IAlgorithm
 {
     // Array which contains all the changes points which haven't been processed again
-    private final List<AbstractLabel> changes = new ArrayList<>();
+    private final List<AbstractLabel> changes = new ArrayList<AbstractLabel>()
+    {
+        @Override
+        public boolean add(AbstractLabel element)
+        {
+            if (false && element.getX() == 2664 && element.getY() == 3746)
+            {
+                System.out.println(element);
+                System.out.println(s.getNeighbours(element));
+                boolean contains = false;
+                for (AbstractLabel n : s.getNeighbours(element)) {
+                    System.out.println(element.getAABB(10, 20) + " with " + n);
+                    System.out.println(element.getAABB(10, 20).contains(n));
+                }
+                System.out.println(s.getCandidates(element));
+                for (StackTraceElement ste : Thread.currentThread().getStackTrace())
+                {
+                    System.out.println(ste.toString());
+                }
+                System.exit(-1);
+            }
+            return super.add(element);
+        }
+    };
+
+    EIL3Solution s;
 
     private int width, height;
 
@@ -29,13 +54,14 @@ public class EIL3Algorithm implements IAlgorithm
         this.width = width;
         this.height = height;
         EIL3Solution solution = new EIL3Solution(width, height, getInput(points));
+        s = solution;
         // Should initialize the candidates for the point
         solution.forEach(solution::getCandidates);
 
-       /* System.out.println(solution.getNeighbours(Point.construct(2664, 3746)));
-        System.out.println(solution.getNeighbours(Point.construct(2656, 3731)));
-        AbstractLabel testlabel = PosLabel.create4PosLabel(2656, 3731);
-        AbstractLabel testlabel2 = PosLabel.create4PosLabel(2664, 3746);
+        /*AbstractLabel testlabel = PosLabel.create4PosLabel(893, 2204);
+        AbstractLabel testlabel2 = PosLabel.create4PosLabel(890, 2224);
+        System.out.println(solution.getNeighbours(testlabel));
+        System.out.println(solution.getNeighbours(testlabel2));
         new ArrayList<>(solution.getCandidates(testlabel2)).forEach(solution::removeCandidate);
         System.out.println(solution.getCandidates(testlabel).size());
         System.out.println(applyRule1(solution, testlabel));
@@ -207,7 +233,7 @@ public class EIL3Algorithm implements IAlgorithm
 
             // Get the conflicts of the candidate
             List<AbstractLabel> conflicts = solution.getConflicts(candidate);
-            AbstractLabel pointConflictedLabel = null;
+            AbstractLabel pointConflictedLabel;
 
             // Check if there is only conflict, if so, check if it can be eliminated with rule 2
             if (conflicts.size() == 1)
@@ -215,6 +241,12 @@ public class EIL3Algorithm implements IAlgorithm
                 // Get point of conflicted label
                 // What is the parent?
                 pointConflictedLabel = conflicts.get(0);
+
+                AxisAlignedBB cAABB = candidate.getAABB(this.width, this.height);
+                if (pointConflictedLabel.getAABB(this.width, this.height).contains(candidate) || cAABB.contains(pointConflictedLabel))
+                {
+                    continue; // Contained points can never be solutions
+                }
 
                 // Loop through all candidates of conflicted point
                 for (AbstractLabel candidateConflictPoint : solution.getCandidates(pointConflictedLabel))
@@ -228,10 +260,10 @@ public class EIL3Algorithm implements IAlgorithm
                         boolean useableCandidate = true;
 
                         // Loop through all conflicts of candidate of conflict point
-                        for (Point conflictCandidateConflictPoint : conflictsCandidateConflictPoint)
+                        for (AbstractLabel conflictCandidateConflictPoint : conflictsCandidateConflictPoint)
                         {
                             // If the point of the label which is in conflict with the candidate of the conflict point --> Rule 2 cannot be applied
-                            if (conflictCandidateConflictPoint.equals(point))
+                            if (cAABB.overlaps(conflictCandidateConflictPoint.getAABB(this.width, this.height)))
                             {
                                 useableCandidate = false;
                             }
@@ -240,6 +272,7 @@ public class EIL3Algorithm implements IAlgorithm
                         // Check if there is no conflict found which prevents rule 2 from applying
                         if (useableCandidate)
                         {
+
                             conflictSolver = candidateConflictPoint;
                             break; // break out of foreach loop which loops through all candidates of conflicted point
                         }

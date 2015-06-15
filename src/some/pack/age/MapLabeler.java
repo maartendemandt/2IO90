@@ -1,5 +1,6 @@
 package some.pack.age;
 
+import some.pack.age.algorithm.AnnealingAlgorithm;
 import some.pack.age.algorithm.IAlgorithm;
 import some.pack.age.models.Point;
 import some.pack.age.models.labels.PosLabel;
@@ -118,6 +119,10 @@ public class MapLabeler
             assert this.width > 0 : "No width has been defined";
             assert this.height > 0 : "No height has been defined";
             this.algorithm = Main.USE_ME_SENPAI.isPresent() ? Main.USE_ME_SENPAI.get() : this.algorithm;
+            if (this.algorithm instanceof AnnealingAlgorithm && Main.TIME_LIMIT.isPresent())
+            {
+                ((AnnealingAlgorithm) this.algorithm).setNumberOfMinutes(Main.TIME_LIMIT.get());
+            }
             return new MapLabeler(this.model, this.algorithm, this.width, this.height);
         }
     }

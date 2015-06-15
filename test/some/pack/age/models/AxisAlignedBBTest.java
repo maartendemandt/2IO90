@@ -73,6 +73,14 @@ public class AxisAlignedBBTest
         System.out.println("Overlap 2");
     }
 
+    @Test
+    public void testCustom()
+    {
+        System.out.println(" == CUSTOM TEST == ");
+        this.mainBox = new AxisAlignedBB(890, 2224, 890 + 10, 2224 - 20);
+        check(893, 2204, 893 + 10, 2204 + 20);
+    }
+
     private void check(int x, int y, int u, int v)
     {
         AxisAlignedBB aabb = new AxisAlignedBB(x, y, u, v);
