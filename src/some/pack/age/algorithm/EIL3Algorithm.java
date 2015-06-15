@@ -87,7 +87,8 @@ public class EIL3Algorithm implements IAlgorithm
                     }
                     labelsMostCandidates.add(point);
                 }
-                labelsMostCandidates.add(point);
+                // In honour of this bug, I leave it commented. Thanks for the near heart-attack, friend.
+                // labelsMostCandidates.add(point);
             }
 
             // For each point with most candidates delete candidate with maximum number of conflicts
