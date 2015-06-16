@@ -287,7 +287,7 @@ elif distribution == "clustered":
                         x = cluster_x + local_x
                         y = cluster_y + local_y
                         # Makes sure potential location is within bounds
-                        if not 0 <= x <= 10000 or not 0 <= y <= 10000:
+                        if not 0 <= x <= 9999 or not 0 <= y <= 9999:
                             continue
                         # Makes sure there are no duplicate points
                         for p in points:
