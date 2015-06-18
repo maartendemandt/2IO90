@@ -1,5 +1,5 @@
 Placement model;Width;Height;Number of points;Distribution;Algorithm;Labels placed;Quality;Running time(ns)
-2pos;30;20;9000;clustered;eil3;;;
-4pos;60;40;4000;hardest;eil3;;;
-4pos;60;40;5000;hardest;eil3;;;
-4pos;60;40;6000;hardest;eil3;;;
+2pos;30;20;9000;clustered;eil3;8443;0.9381111111111111;1052627290
+4pos;60;40;4000;hardest;eil3;3159;0.78975;8002740082
+4pos;60;40;5000;hardest;eil3;3923;0.7846;9248668197
+4pos;60;40;6000;hardest;eil3;4718;0.7863333333333333;10658336464
