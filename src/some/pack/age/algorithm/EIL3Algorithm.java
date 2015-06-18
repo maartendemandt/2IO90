@@ -6,10 +6,8 @@ import some.pack.age.models.solution.EIL3Solution;
 import some.pack.age.models.Point;
 import some.pack.age.models.solution.Solution;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import some.pack.age.models.labels.AbstractLabel;
 
 /**
@@ -21,6 +19,14 @@ public class EIL3Algorithm implements IAlgorithm
     private final List<AbstractLabel> changes = new ArrayList<>();
 
     private int width, height;
+
+    private boolean debug = false;
+
+    public void debug(String line)
+    {
+        if (!debug) return;
+        System.out.println(line);
+    }
 
     @Override
     public Solution computePoints(Set<AbstractLabel> points, int width, int height)
@@ -69,6 +75,7 @@ public class EIL3Algorithm implements IAlgorithm
         // If Phase 2 is needed, execute phase 2
         while (checkPhase2(solution))
         {
+            debug("\n\n");
             int maxCandidates = 0;
             List<AbstractLabel> labelsMostCandidates = new ArrayList<>();
 
@@ -90,6 +97,17 @@ public class EIL3Algorithm implements IAlgorithm
                 // In honour of this bug, I leave it commented. Thanks for the near heart-attack, friend.
                 // labelsMostCandidates.add(point);
             }
+
+            debug("Loop data:");
+            for (AbstractLabel label : labelsMostCandidates)
+            {
+                debug("Found label " + label + ". Candidates: ");
+                for (AbstractLabel candidate : solution.getCandidates(label))
+                {
+                    debug("  " + candidate + " with " + solution.getConflicts(candidate).size() + " conflicts");
+                }
+            }
+
 
             // For each point with most candidates delete candidate with maximum number of conflicts
             for (AbstractLabel point : labelsMostCandidates) {
@@ -133,6 +151,7 @@ public class EIL3Algorithm implements IAlgorithm
                 label = applyRule3(solution, label, width, height); // Apply Rule 3 (L3)
             }
             processArrayOfChanges(solution, width, height);
+            debug("\n\n");
         }
         solution.getPoints().stream()
                 .filter(point -> solution.getCandidates(point).size() <= 1)
@@ -159,15 +178,19 @@ public class EIL3Algorithm implements IAlgorithm
         Set<AbstractLabel> neighbours = solution.getNeighbours(point);
         for (AbstractLabel candidate : solution.getCandidates(point))
         {
+            debug("Candidate " + candidate);
             // Remove all candidates of point except the candidate with no conflicts
             AxisAlignedBB aabb = candidate.getAABB(this.width, this.height);
             boolean possible = true;
             for (AbstractLabel neighbour : neighbours)
             {
+                debug("  Neighbour " + neighbour);
+                List<AbstractLabel> neighbourCandidates = solution.getCandidates(neighbour);
                 if (!aabb.contains(neighbour))
                 {
-                    for (AbstractLabel neighbourCandidate : solution.getCandidates(neighbour))
+                    for (AbstractLabel neighbourCandidate : neighbourCandidates)
                     {
+                        debug("    Neighbour candidate: " + neighbourCandidate);
                         if (!neighbourCandidate.isValid())
                         {
                             continue;
@@ -175,13 +198,17 @@ public class EIL3Algorithm implements IAlgorithm
                         AxisAlignedBB other = neighbourCandidate.getAABB(this.width, this.height);
                         if (other.overlaps(aabb))
                         {
+                            debug("      " + other + " overlaps " + aabb);
                             possible = false;
                             break;
                         }
+                        else
+                            debug("      No overlap");
                     }
                 }
-                else
+                else if (!neighbourCandidates.isEmpty())
                 {
+                    debug("    Contains");
                     possible = false;
                 }
                 if (!possible)
@@ -189,6 +216,7 @@ public class EIL3Algorithm implements IAlgorithm
                     break;
                 }
             }
+            debug("Possible? " + possible);
             if (!possible)
             {
                 continue;
@@ -285,9 +313,9 @@ public class EIL3Algorithm implements IAlgorithm
             // Get conflicts of candidate
             AbstractLabel onlyCandidate = candidates.get(0);
             AxisAlignedBB only = onlyCandidate.getAABB(width, height);
-            for (Point neighbour : solution.getNeighbours(onlyCandidate))
+            for (AbstractLabel neighbour : solution.getNeighbours(onlyCandidate))
             {
-                if (only.contains(neighbour))
+                if (only.contains(neighbour) && !solution.getCandidates(neighbour).isEmpty())
                     return point;
             }
             List<AbstractLabel> conflicts = solution.getConflicts(onlyCandidate);
@@ -350,6 +378,8 @@ public class EIL3Algorithm implements IAlgorithm
 
     private static int prev = -1;
 
+    private static double q = -1;
+
     private static int loopnum = 0;
 
     boolean checkPhase2(EIL3Solution solution)
@@ -367,9 +397,14 @@ public class EIL3Algorithm implements IAlgorithm
         }
         if (prev == size)
         {
+            //this.debug = true;
+            this.applyRule1(solution, PosLabel.create4PosLabel(587, 885));
+            System.out.println("Previous quality: " + q);
+            System.out.println("Current quality: " + solution.getQuality());
             throw new IllegalStateException("Loop without progress " + loopnum);
         }
         prev = size;
+        q = solution.getQuality();
         loopnum++;
         return b;
     }

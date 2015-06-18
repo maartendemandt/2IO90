@@ -28,7 +28,7 @@ if not os.path.exists("./output"):
 # Runs all samples through labeling program
 for s in samples:
     algorithm = s.rstrip().split("-")[6][0:-4]
-    command = "java -jar ../../dist/2IO90.jar --file=input/" + s + " --out --force-algorithm=" + algorithm
+    command = "C:\\Program Files\\Java\\jre1.8.0_45\\bin\\java.exe -jar ../../dist/2IO90.jar --file=input/" + s + " --out --force-algorithm=" + algorithm
     print(command)
     subprocess.call(command)
 

@@ -1,5 +1,5 @@
 Placement model;Width;Height;Number of points;Distribution;Algorithm;Labels placed;Quality;Running time(ns)
-1slider;300;200;784;easiest;eil3;784;1.0;169394041
-2pos;300;200;100;random;eil3;98;0.98;69055116
-4pos;300;200;1159;hardest;eil3;919;0.7929249352890423;309348920
-4pos;300;200;10000;clustered;eil3;425;0.0425;253085611344
+1slider;300;200;784;easiest;eil3;784;1.0;841223884
+2pos;300;200;100;random;eil3;98;0.98;166364021
+4pos;300;200;1159;hardest;eil3;925;0.7981018119068162;2534329922
+4pos;300;200;10000;clustered;eil3;857;0.0857;254978648823
