@@ -1,5 +1,17 @@
 Placement model;Width;Height;Number of points;Distribution;Algorithm;Labels placed;Quality;Running time(ns)
-2pos;100;60;10000;clustered;;;;
-2pos;100;60;10000;random;;;;
-4pos;100;60;10000;clustered;;;;
-4pos;100;60;10000;random;;;;
+1slider;100;60;7987;easiest;sa;;;
+1slider;100;60;10000;clustered;sa;;;
+1slider;100;60;10000;hardest;sa;;;
+1slider;100;60;10000;random;sa;;;
+1slider;1000;600;64;easiest;sa;;;
+1slider;1000;600;84;hardest;sa;;;
+1slider;1000;600;100;clustered;sa;;;
+1slider;1000;600;100;random;sa;;;
+1slider;2000;1200;12;hardest;sa;;;
+1slider;2000;1200;16;easiest;sa;;;
+1slider;2000;1200;25;clustered;sa;;;
+1slider;2000;1200;25;random;sa;;;
+1slider;3000;2000;1;hardest;sa;;;
+1slider;3000;2000;4;easiest;sa;;;
+1slider;3000;2000;10;clustered;sa;;;
+1slider;3000;2000;10;random;sa;;;
